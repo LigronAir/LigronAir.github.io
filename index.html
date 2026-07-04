@@ -1,244 +1,62 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<title>LigronAir</title>
-
-<style>
-
-:root{
-
-    --bg:#1B1E24;
-    --panel:#252A33;
-    --border:#343A46;
-
-    --text:#F2F4F7;
-    --text2:#9FA8B5;
-
-    --blue:#3A8DFF;
-
-    --green:#30D158;
-
-}
-
-*{
-
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-
-    font-family:"Segoe UI",sans-serif;
-
-}
-
-html,body{
-
-    width:100%;
-    height:100%;
-
-    background:var(--bg);
-
-    color:var(--text);
-
-}
-
-body{
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-}
-
-main{
-
-    width:900px;
-    max-width:92%;
-
-    text-align:center;
-
-}
-
-img{
-
-    width:340px;
-    max-width:75%;
-
-}
-
-h1{
-
-    margin-top:30px;
-
-    font-size:42px;
-    font-weight:300;
-
-    letter-spacing:2px;
-
-}
-
-.subtitle{
-
-    margin-top:10px;
-
-    color:var(--text2);
-
-    font-size:18px;
-
-}
-
-.line{
-
-    margin:45px auto;
-
-    width:100%;
-
-    height:1px;
-
-    background:var(--border);
-
-}
-
-.status{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    gap:12px;
-
-    padding:12px 22px;
-
-    border-radius:6px;
-
-    background:var(--panel);
-
-    border:1px solid var(--border);
-
-}
-
-.dot{
-
-    width:10px;
-    height:10px;
-
-    border-radius:50%;
-
-    background:var(--green);
-
-}
-
-.buttons{
-
-    margin-top:50px;
-
-    display:flex;
-
-    justify-content:center;
-
-    gap:18px;
-
-    flex-wrap:wrap;
-
-}
-
-.button{
-
-    display:inline-block;
-
-    padding:14px 28px;
-
-    border-radius:6px;
-
-    border:1px solid var(--border);
-
-    background:var(--panel);
-
-    color:white;
-
-    text-decoration:none;
-
-    transition:.2s;
-
-}
-
-.button:hover{
-
-    background:var(--blue);
-
-}
-
-footer{
-
-    margin-top:60px;
-
-    color:var(--text2);
-
-    font-size:13px;
-
-}
-
-</style>
-
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0c0f14" />
+    <title>LigronAir</title>
+
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/buttons.css" />
+    <link rel="stylesheet" href="css/header.css" />
+    <link rel="stylesheet" href="css/main.css" />
 </head>
 
 <body>
+    <div class="page">
 
-<main>
+        <header class="ligron-header">
+            <div class="header-brand">
+                <img class="header-logo" src="ligron.png" alt="LigronAir" />
+                <div class="header-text">
+                    <h1 class="header-title">LigronAir</h1>
+                    <div class="header-subtitle">Plataforma Distribuida de Producción Audiovisual</div>
+                </div>
+            </div>
 
-<img src="ligron.png" alt="LigronAir">
+            <div class="header-actions">
+                <button class="ligron-button primary" type="button">Iniciar sesión</button>
+                <button class="ligron-button secondary" type="button">Crear cuenta</button>
+            </div>
+        </header>
 
-<h1>LigronAir</h1>
+        <main class="content">
+            <section class="panel" aria-labelledby="estado-plataforma">
+                <h2 id="estado-plataforma">LigronAir</h2>
+                <p>
+                    Plataforma pública del ecosistema LigronAir.
+                    El acceso y las funciones de cuenta están en preparación.
+                </p>
 
-<div class="subtitle">
+                <div class="status" aria-label="Estado de la plataforma">
+                    <div class="status-dot"></div>
+                    <span>Plataforma en construcción</span>
+                </div>
 
-<!-- ### FIX -->
-Plataforma Distribuida de Producción Audiovisual
+                <div class="notice">
+                    <h3>Estado actual</h3>
+                    <p>
+                        La interfaz ya transmite la identidad de LigronAir.
+                        Todavía no hay autenticación real, base de datos ni backend conectado.
+                    </p>
+                </div>
+            </section>
+        </main>
 
-</div>
+        <footer>
+            LigronAir · V0.3 · Plataforma Distribuida de Producción Audiovisual
+        </footer>
 
-<div class="line"></div>
-
-<div class="status">
-
-<div class="dot"></div>
-
-LigronLink Registro EN LÍNEA
-
-</div>
-
-<div class="buttons">
-
-<a class="button"
-href="https://api.ligronair.tv/api/v1/status">
-
-<!-- ### FIX -->
-LigronLink Estado del sistema
-
-</a>
-
-<!-- ### FIX -->
-<a class="button"
-href="https://ligronair.tv">
-
-Portal
-
-</a>
-
-</div>
-
-<footer>
-
-LigronAir · Versión 0.2
-
-</footer>
-
-</main>
-
+    </div>
 </body>
-
 </html>
