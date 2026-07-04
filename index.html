@@ -1,25 +1,185 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
 <title>LigronAir</title>
 
 <style>
 
-html,body{
+:root{
+
+    --bg:#1B1E24;
+    --panel:#252A33;
+    --border:#343A46;
+
+    --text:#F2F4F7;
+    --text2:#9FA8B5;
+
+    --blue:#3A8DFF;
+
+    --green:#30D158;
+
+}
+
+*{
+
     margin:0;
     padding:0;
+    box-sizing:border-box;
+
+    font-family:"Segoe UI",sans-serif;
+
+}
+
+html,body{
+
     width:100%;
     height:100%;
-    background:#000;
+
+    background:var(--bg);
+
+    color:var(--text);
+
+}
+
+body{
+
     display:flex;
     justify-content:center;
     align-items:center;
+
+}
+
+main{
+
+    width:900px;
+    max-width:92%;
+
+    text-align:center;
+
 }
 
 img{
-    max-width:500px;
-    width:70%;
+
+    width:340px;
+    max-width:75%;
+
+}
+
+h1{
+
+    margin-top:30px;
+
+    font-size:42px;
+    font-weight:300;
+
+    letter-spacing:2px;
+
+}
+
+.subtitle{
+
+    margin-top:10px;
+
+    color:var(--text2);
+
+    font-size:18px;
+
+}
+
+.line{
+
+    margin:45px auto;
+
+    width:100%;
+
+    height:1px;
+
+    background:var(--border);
+
+}
+
+.status{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:12px 22px;
+
+    border-radius:6px;
+
+    background:var(--panel);
+
+    border:1px solid var(--border);
+
+}
+
+.dot{
+
+    width:10px;
+    height:10px;
+
+    border-radius:50%;
+
+    background:var(--green);
+
+}
+
+.buttons{
+
+    margin-top:50px;
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:18px;
+
+    flex-wrap:wrap;
+
+}
+
+.button{
+
+    display:inline-block;
+
+    padding:14px 28px;
+
+    border-radius:6px;
+
+    border:1px solid var(--border);
+
+    background:var(--panel);
+
+    color:white;
+
+    text-decoration:none;
+
+    transition:.2s;
+
+}
+
+.button:hover{
+
+    background:var(--blue);
+
+}
+
+footer{
+
+    margin-top:60px;
+
+    color:var(--text2);
+
+    font-size:13px;
+
 }
 
 </style>
@@ -28,9 +188,64 @@ img{
 
 <body>
 
+<main>
+
 <img src="ligron.png" alt="LigronAir">
 
-</body>
-</html>
+<h1>LigronAir</h1>
 
-comprometer cambios??
+<div class="subtitle">
+
+<!-- ### FIX -->
+Distributed Broadcast Control Network
+
+</div>
+
+<div class="line"></div>
+
+<div class="status">
+
+<div class="dot"></div>
+
+LigronLink Registry ONLINE
+
+</div>
+
+<div class="buttons">
+
+<a class="button"
+href="https://api.ligronair.tv/api/v1/status">
+
+<!-- ### FIX -->
+LigronLink API
+
+</a>
+
+<a class="button"
+href="https://github.com/LigronAir/LigronLink">
+
+GitHub
+
+</a>
+
+<!-- ### FIX -->
+<a class="button"
+href="https://ligronair.tv">
+
+Portal
+
+</a>
+
+</div>
+
+<footer>
+
+LigronAir · Version 0.2
+
+</footer>
+
+</main>
+
+</body>
+
+</html>
