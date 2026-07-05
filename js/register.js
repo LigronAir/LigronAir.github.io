@@ -21,7 +21,7 @@ form.addEventListener("submit", async function (event) {
     }
 
     const response = await fetch(
-        "https://api.ligronair.tv/api/v1/register",
+        "https://ligronlink.ligronlink-dev.workers.dev/api/v1/register",
         {
             method: "POST",
 
