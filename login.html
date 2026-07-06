@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0c0f14">
+
+    <title>Iniciar sesión · LigronAir</title>
+
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/buttons.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/register.css">
+
+</head>
+
+<body>
+
+<div class="page">
+
+    <header class="ligron-header">
+
+        <div class="header-brand">
+
+            <a href="index.html">
+
+                <img
+                    class="header-logo"
+                    src="ligron.png"
+                    alt="LigronAir">
+
+            </a>
+
+            <div class="header-text">
+
+                <h1 class="header-title">
+                    LigronAir
+                </h1>
+
+                <div class="header-subtitle">
+                    Plataforma Distribuida de Producción Audiovisual
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="header-actions">
+
+            <a
+                href="register.html"
+                class="ligron-button secondary">
+
+                Crear cuenta
+
+            </a>
+
+        </div>
+
+    </header>
+
+    <main class="register-page">
+
+        <section class="register-card">
+
+            <img
+                class="register-logo"
+                src="ligron.png"
+                alt="LigronAir">
+
+            <h2>
+                Iniciar sesión
+            </h2>
+
+            <p class="register-description">
+
+                Accede a tu cuenta LigronAir para administrar
+                equipos, dispositivos y servicios distribuidos.
+
+            </p>
+
+            <form id="loginForm">
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Correo electrónico
+                    </label>
+
+                    <input
+                        id="email"
+                        type="email"
+                        placeholder="nombre@correo.com"
+                        autocomplete="username">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Contraseña
+                    </label>
+
+                    <input
+                        id="password"
+                        type="password"
+                        autocomplete="current-password">
+
+                </div>
+
+                <button
+                    class="ligron-button primary register-button"
+                    type="submit">
+
+                    Iniciar sesión
+
+                </button>
+
+            </form>
+
+            <div
+                id="loginMessage"
+                class="register-message hidden">
+
+            </div>
+
+            <div class="register-footer">
+
+                ¿Todavía no tienes una cuenta?
+
+                <a href="register.html">
+                    Crear cuenta
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="js/login.js"></script>
+
+</body>
+
+</html>
