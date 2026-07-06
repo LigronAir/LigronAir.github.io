@@ -1,8 +1,22 @@
 const form = document.getElementById("registerForm");
 
+const message = document.getElementById("registerMessage");
+
+function showMessage(text, type) {
+
+    message.classList.remove("hidden", "success", "error");
+
+    message.classList.add(type);
+
+    message.innerHTML = text;
+
+}
+
 form.addEventListener("submit", async function (event) {
 
     event.preventDefault();
+
+    message.classList.add("hidden");
 
     const nombre = document.getElementById("nombre").value.trim();
 
@@ -14,36 +28,92 @@ form.addEventListener("submit", async function (event) {
 
     if (password !== password2) {
 
-        alert("Las contraseñas no coinciden.");
+        showMessage(
+
+            "Las contraseñas no coinciden.",
+
+            "error"
+
+        );
 
         return;
 
     }
 
-    const response = await fetch(
-        "https://ligronlink.ligronlink-dev.workers.dev/api/v1/register",
-        {
-            method: "POST",
+    try {
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+        const response = await fetch(
 
-            body: JSON.stringify({
+            "https://ligronlink.ligronlink-dev.workers.dev/api/v1/register",
 
-                nombre,
+            {
 
-                email,
+                method: "POST",
 
-                password
+                headers: {
 
-            })
+                    "Content-Type": "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    nombre,
+
+                    email,
+
+                    password
+
+                })
+
+            }
+
+        );
+
+        const resultado = await response.json();
+
+        if (resultado.success) {
+
+            showMessage(
+
+                "✅ Cuenta creada correctamente.<br><br>Serás redirigido al inicio de sesión...",
+
+                "success"
+
+            );
+
+            form.reset();
+
+            setTimeout(function () {
+
+                window.location.href = "login.html";
+
+            }, 2500);
 
         }
-    );
+        else {
 
-    const resultado = await response.json();
+            showMessage(
 
-    alert(JSON.stringify(resultado, null, 2));
+                resultado.error,
+
+                "error"
+
+            );
+
+        }
+
+    }
+    catch (error) {
+
+        showMessage(
+
+            "No se ha podido contactar con LigronLink.",
+
+            "error"
+
+        );
+
+    }
 
 });
