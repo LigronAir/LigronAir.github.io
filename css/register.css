@@ -225,3 +225,85 @@ form{
     }
 
 }
+/* ==========================================================
+   MENSAJES DEL REGISTRO
+   ========================================================== */
+
+.register-message{
+
+    margin-top:24px;
+
+    padding:18px 20px;
+
+    border-radius:12px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    background:rgba(255,255,255,.04);
+
+    color:var(--color-text);
+
+    text-align:center;
+
+    line-height:1.6;
+
+    transition:.25s;
+
+}
+
+.register-message.success{
+
+    border-color:rgba(46,204,113,.45);
+
+    background:rgba(46,204,113,.12);
+
+    color:#baf5d0;
+
+}
+
+.register-message.error{
+
+    border-color:rgba(231,76,60,.45);
+
+    background:rgba(231,76,60,.12);
+
+    color:#ffd0ca;
+
+}
+
+.hidden{
+
+    display:none;
+
+}
+/* ==========================================================
+   MOSTRAR / OCULTAR CONTRASEÑA
+   ========================================================== */
+
+.password-toggle {
+
+    position: absolute;
+
+    right: 14px;
+
+    top: 38px;
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    font-size: 18px;
+
+    opacity: .65;
+
+    transition: .20s;
+
+}
+
+.password-toggle:hover {
+
+    opacity: 1;
+
+}
