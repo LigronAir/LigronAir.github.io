@@ -4,6 +4,8 @@
 // Inicio de sesión
 // ==========================================================
 
+import { saveUser } from "./session.js";
+
 const form = document.getElementById("loginForm");
 
 const message = document.getElementById("loginMessage");
@@ -60,6 +62,9 @@ form.addEventListener("submit", async function (event) {
 
         if (resultado.success) {
 
+            // Guardar la sesión del usuario
+            saveUser(resultado.user);
+
             showMessage(
 
                 "✅ Bienvenido <strong>" +
@@ -71,6 +76,13 @@ form.addEventListener("submit", async function (event) {
             );
 
             form.reset();
+
+            // Redirigir al espacio privado
+            setTimeout(function () {
+
+                window.location.href = "index.html";
+
+            }, 1000);
 
         }
         else {
