@@ -18,7 +18,7 @@ if (header) {
             <span class="header-user">
                 <img
                     src="assets/iconos/usuario.svg"
-                    class="icon icon20"
+                    class="icon icon24"
                     alt=""
                     aria-hidden="true" />
                 <span class="header-user-name">${user.nombre}</span>
@@ -47,7 +47,7 @@ if (header) {
 
                 <img
                     src="assets/iconos/usuario.svg"
-                    class="icon icon20"
+                    class="icon icon24"
                     alt=""
                     aria-hidden="true" />
 
@@ -62,7 +62,7 @@ if (header) {
 
                 <img
                     src="assets/iconos/añadir.svg"
-                    class="icon icon20"
+                    class="icon icon24"
                     alt=""
                     aria-hidden="true" />
 

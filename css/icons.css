@@ -24,8 +24,10 @@
 }
 
 .icon16{ width:16px; height:16px; }
-.icon20{ width:50px; height:50px; }
+.icon20{ width:20px; height:20px; }
+.icon22{ width:22px; height:22px; }
 .icon24{ width:24px; height:24px; }
+.icon26{ width:26px; height:26px; }
 .icon28{ width:28px; height:28px; }
 .icon32{ width:32px; height:32px; }
 .icon40{ width:40px; height:40px; }
@@ -39,7 +41,7 @@
 
     justify-content:center;
 
-    gap:10px;
+    gap:12px;
 
 }
 
@@ -64,19 +66,27 @@
 
 }
 
-.header-user .icon{ opacity:.95; }
+.header-user .icon{
+
+    width:24px;
+
+    height:24px;
+
+    opacity:.95;
+
+}
 
 .password-toggle{
 
     position:absolute;
 
-    right:14px;
+    right:12px;
 
     top:38px;
 
-    width:34px;
+    width:40px;
 
-    height:34px;
+    height:40px;
 
     border:none;
 
@@ -128,8 +138,8 @@
 
 .password-toggle .icon{
 
-    width:18px;
+    width:22px;
 
-    height:18px;
+    height:22px;
 
 }

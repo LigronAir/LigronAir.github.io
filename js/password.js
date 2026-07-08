@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
         button.innerHTML = `
             <img
                 src="assets/iconos/mostrar.svg"
-                class="icon icon20"
+                class="icon icon22"
                 alt=""
                 aria-hidden="true" />
         `;
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 button.innerHTML = `
                     <img
                         src="assets/iconos/ocultar.svg"
-                        class="icon icon20"
+                        class="icon icon22"
                         alt=""
                         aria-hidden="true" />
                 `;
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 button.innerHTML = `
                     <img
                         src="assets/iconos/mostrar.svg"
-                        class="icon icon20"
+                        class="icon icon22"
                         alt=""
                         aria-hidden="true" />
                 `;
