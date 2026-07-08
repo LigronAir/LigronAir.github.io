@@ -41,9 +41,7 @@
     border: 1px solid rgba(255,255,255,.06);
 
     box-shadow:
-
         0 20px 60px rgba(0,0,0,.45),
-
         inset 0 1px 0 rgba(255,255,255,.05);
 
     backdrop-filter: blur(18px);
@@ -63,9 +61,7 @@
     margin:0 auto 28px;
 
     filter:
-
         drop-shadow(0 0 22px rgba(58,141,255,.28))
-
         drop-shadow(0 0 10px rgba(214,176,77,.15));
 
 }
@@ -120,6 +116,8 @@ form{
 
     flex-direction:column;
 
+    position:relative;
+
 }
 
 .form-group label{
@@ -139,6 +137,8 @@ form{
     height:50px;
 
     padding:0 16px;
+
+    padding-right:56px;
 
     border-radius:10px;
 
@@ -160,9 +160,7 @@ form{
 
     border-color:var(--color-primary);
 
-    box-shadow:
-
-        0 0 0 3px rgba(58,141,255,.18);
+    box-shadow: 0 0 0 3px rgba(58,141,255,.18);
 
 }
 
@@ -212,19 +210,6 @@ form{
 
 }
 
-/* ==========================================================
-   RESPONSIVE
-   ========================================================== */
-
-@media(max-width:700px){
-
-    .register-card{
-
-        padding:28px;
-
-    }
-
-}
 /* ==========================================================
    MENSAJES DEL REGISTRO
    ========================================================== */
@@ -276,34 +261,17 @@ form{
     display:none;
 
 }
+
 /* ==========================================================
-   MOSTRAR / OCULTAR CONTRASEÑA
+   RESPONSIVE
    ========================================================== */
 
-.password-toggle {
+@media(max-width:700px){
 
-    position: absolute;
+    .register-card{
 
-    right: 14px;
+        padding:28px;
 
-    top: 38px;
-
-    border: none;
-
-    background: transparent;
-
-    cursor: pointer;
-
-    font-size: 18px;
-
-    opacity: .65;
-
-    transition: .20s;
-
-}
-
-.password-toggle:hover {
-
-    opacity: 1;
+    }
 
 }

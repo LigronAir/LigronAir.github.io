@@ -1,0 +1,135 @@
+/* ==========================================================
+   LigronAir
+   Iconografía
+   ========================================================== */
+
+.icon{
+
+    width:22px;
+
+    height:22px;
+
+    display:inline-block;
+
+    vertical-align:middle;
+
+    user-select:none;
+
+    pointer-events:none;
+
+    flex-shrink:0;
+
+    aspect-ratio:1 / 1;
+
+}
+
+.icon16{ width:16px; height:16px; }
+.icon20{ width:20px; height:20px; }
+.icon24{ width:24px; height:24px; }
+.icon28{ width:28px; height:28px; }
+.icon32{ width:32px; height:32px; }
+.icon40{ width:40px; height:40px; }
+.icon48{ width:48px; height:48px; }
+
+.button-with-icon{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+}
+
+.button-with-icon .icon{ flex-shrink:0; }
+.button-with-icon span{ line-height:1; }
+
+.header-user{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    color:var(--color-text, #efece4);
+
+    font-weight:600;
+
+    letter-spacing:.2px;
+
+    white-space:nowrap;
+
+}
+
+.header-user .icon{ opacity:.95; }
+
+.password-toggle{
+
+    position:absolute;
+
+    right:14px;
+
+    top:38px;
+
+    width:34px;
+
+    height:34px;
+
+    border:none;
+
+    background:transparent;
+
+    padding:0;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    color:var(--color-text-secondary, #9fa8b5);
+
+    opacity:.72;
+
+    transition:
+        opacity .2s ease,
+        transform .2s ease,
+        color .2s ease,
+        background .2s ease;
+
+}
+
+.password-toggle:hover{
+
+    opacity:1;
+
+    transform:translateY(-1px);
+
+    color:var(--color-text, #efece4);
+
+    background:rgba(255,255,255,.04);
+
+}
+
+.password-toggle:focus-visible{
+
+    outline:2px solid rgba(58,141,255,.45);
+
+    outline-offset:2px;
+
+}
+
+.password-toggle .icon{
+
+    width:18px;
+
+    height:18px;
+
+}

@@ -12,6 +12,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     passwordFields.forEach(function (input) {
 
+        const group = input.parentElement;
+
+        if (!group) {
+            return;
+        }
+
+        group.style.position = "relative";
+
         const button = document.createElement("button");
 
         button.type = "button";
@@ -20,11 +28,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
         button.title = "Mostrar contraseña";
 
-        button.innerHTML = "👁";
+        button.setAttribute("aria-label", "Mostrar contraseña");
 
-        input.parentElement.style.position = "relative";
+        button.innerHTML = `
+            <img
+                src="assets/iconos/mostrar.svg"
+                class="icon icon20"
+                alt=""
+                aria-hidden="true" />
+        `;
 
-        input.parentElement.appendChild(button);
+        group.appendChild(button);
 
         button.addEventListener("click", function () {
 
@@ -32,18 +46,34 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 input.type = "text";
 
-                button.innerHTML = "🙈";
-
                 button.title = "Ocultar contraseña";
+
+                button.setAttribute("aria-label", "Ocultar contraseña");
+
+                button.innerHTML = `
+                    <img
+                        src="assets/iconos/ocultar.svg"
+                        class="icon icon20"
+                        alt=""
+                        aria-hidden="true" />
+                `;
 
             }
             else {
 
                 input.type = "password";
 
-                button.innerHTML = "👁";
-
                 button.title = "Mostrar contraseña";
+
+                button.setAttribute("aria-label", "Mostrar contraseña");
+
+                button.innerHTML = `
+                    <img
+                        src="assets/iconos/mostrar.svg"
+                        class="icon icon20"
+                        alt=""
+                        aria-hidden="true" />
+                `;
 
             }
 

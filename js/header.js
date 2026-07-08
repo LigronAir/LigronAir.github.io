@@ -15,21 +15,30 @@ if (header) {
     if (user) {
 
         header.innerHTML = `
-
             <span class="header-user">
-
-                👤 ${user.nombre}
-
+                <img
+                    src="assets/iconos/usuario.svg"
+                    class="icon icon20"
+                    alt=""
+                    aria-hidden="true" />
+                <span class="header-user-name">${user.nombre}</span>
             </span>
 
             <button
                 id="logoutButton"
-                class="ligron-button secondary">
+                type="button"
+                class="ligron-button secondary button-with-icon">
 
-                Cerrar sesión
+                <img
+                    src="assets/iconos/cerrar_sesion.svg"
+                    class="icon icon20"
+                    alt=""
+                    aria-hidden="true" />
 
+                <span>
+                    Cerrar sesión
+                </span>
             </button>
-
         `;
 
         document
@@ -40,23 +49,35 @@ if (header) {
     else {
 
         header.innerHTML = `
-
             <a
                 href="login.html"
-                class="ligron-button primary">
+                class="ligron-button primary button-with-icon">
 
-                Iniciar sesión
+                <img
+                    src="assets/iconos/iniciar_sesion.svg"
+                    class="icon icon20"
+                    alt=""
+                    aria-hidden="true" />
 
+                <span>
+                    Iniciar sesión
+                </span>
             </a>
 
             <a
                 href="register.html"
-                class="ligron-button secondary">
+                class="ligron-button secondary button-with-icon">
 
-                Crear cuenta
+                <img
+                    src="assets/iconos/anadir.svg"
+                    class="icon icon20"
+                    alt=""
+                    aria-hidden="true" />
 
+                <span>
+                    Crear cuenta
+                </span>
             </a>
-
         `;
 
     }

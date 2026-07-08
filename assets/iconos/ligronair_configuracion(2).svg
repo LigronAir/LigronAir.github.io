@@ -3,18 +3,18 @@
 
   <defs>
     <radialGradient id="halo" cx="50%" cy="50%" r="70%">
-      <stop offset="0%" stop-color="#8A5AC2" stop-opacity="0.08" />
-      <stop offset="100%" stop-color="#8A5AC2" stop-opacity="0" />
+      <stop offset="0%" stop-color="#BFC5CC" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#BFC5CC" stop-opacity="0" />
     </radialGradient>
 
     <linearGradient id="innerRing" x1="30%" y1="20%" x2="80%" y2="80%">
-      <stop offset="0%" stop-color="#8A5AC2" stop-opacity="0.85" />
-      <stop offset="100%" stop-color="#4B2B73" stop-opacity="0.45" />
+      <stop offset="0%" stop-color="#BFC5CC" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#5F6770" stop-opacity="0.45" />
     </linearGradient>
 
     <linearGradient id="outerRing" x1="30%" y1="20%" x2="80%" y2="80%">
-      <stop offset="0%" stop-color="#8A5AC2" stop-opacity="0.6" />
-      <stop offset="100%" stop-color="#4B2B73" stop-opacity="0.35" />
+      <stop offset="0%" stop-color="#BFC5CC" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#5F6770" stop-opacity="0.35" />
     </linearGradient>
 
     <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -49,9 +49,7 @@
   
   <g filter="url(#softShadow)" id="simbolo">
     <g transform="translate(88.4,88.4) scale(3.3)">
-      <path d="M2,12 A10,6.2 0 0 1 22,12 A10,6.2 0 0 1 2,12 Z" fill="none" stroke="url(#gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="12" cy="12" r="3" fill="url(#gold)" stroke="none"/>
-      <path d="M3,3 L21,21" fill="none" stroke="url(#gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9.32,5.53 L10.05,2.19 L13.95,2.19 L14.68,5.53 L14.68,5.53 L17.56,3.69 L20.31,6.44 L18.47,9.32 L18.47,9.32 L21.81,10.05 L21.81,13.95 L18.47,14.68 L18.47,14.68 L20.31,17.56 L17.56,20.31 L14.68,18.47 L14.68,18.47 L13.95,21.81 L10.05,21.81 L9.32,18.47 L9.32,18.47 L6.44,20.31 L3.69,17.56 L5.53,14.68 L5.53,14.68 L2.19,13.95 L2.19,10.05 L5.53,9.32 L5.53,9.32 L3.69,6.44 L6.44,3.69 L9.32,5.53 Z M15.20,12.00 A3.2,3.2 0 1,0 8.80,12.00 A3.2,3.2 0 1,0 15.20,12.00 Z" fill="url(#gold)" fill-rule="evenodd" stroke="none"/>
     </g>
   </g>
 
