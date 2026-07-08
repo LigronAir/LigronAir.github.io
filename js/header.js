@@ -27,17 +27,9 @@ if (header) {
             <button
                 id="logoutButton"
                 type="button"
-                class="ligron-button secondary button-with-icon">
+                class="ligron-button secondary">
 
-                <img
-                    src="assets/iconos/cerrar_sesion.svg"
-                    class="icon icon20"
-                    alt=""
-                    aria-hidden="true" />
-
-                <span>
-                    Cerrar sesión
-                </span>
+                Cerrar sesión
             </button>
         `;
 
@@ -54,7 +46,7 @@ if (header) {
                 class="ligron-button primary button-with-icon">
 
                 <img
-                    src="assets/iconos/iniciar_sesion.svg"
+                    src="assets/iconos/usuario.svg"
                     class="icon icon20"
                     alt=""
                     aria-hidden="true" />
@@ -69,7 +61,7 @@ if (header) {
                 class="ligron-button secondary button-with-icon">
 
                 <img
-                    src="assets/iconos/anadir.svg"
+                    src="assets/iconos/añadir.svg"
                     class="icon icon20"
                     alt=""
                     aria-hidden="true" />
