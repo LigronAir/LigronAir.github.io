@@ -47,11 +47,10 @@
   <circle cx="128" cy="128" r="72" fill="url(#glow)" />
 
   
-  <g id="simbolo" filter="url(#softShadow)">
-      <path d="M128 92 L170 168 H86 Z" fill="none" stroke="url(#gold)" stroke-width="5.5"
-            stroke-linejoin="round"/>
-      <path d="M128 118 V142" fill="none" stroke="url(#gold)" stroke-width="7" stroke-linecap="round"/>
-      <circle cx="128" cy="154" r="4.2" fill="url(#gold)"/>
+  <g id="simbolo" filter="url(#softShadow)" transform="translate(128 128) scale(1.22) translate(-128 -128)">
+      <path d="M128 92 L170 168 H86 Z" fill="none" stroke="url(#gold)" stroke-width="5.5" stroke-linejoin="round" />
+      <path d="M128 118 V142" fill="none" stroke="url(#gold)" stroke-width="7" stroke-linecap="round" />
+      <circle cx="128" cy="154" r="4.2" fill="url(#gold)" />
     </g>
 
   

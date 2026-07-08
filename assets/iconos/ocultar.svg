@@ -48,10 +48,10 @@
 
   
   <g filter="url(#softShadow)" id="simbolo">
-    <g transform="translate(88.4,88.4) scale(3.3)">
-      <path d="M2,12 A10,6.2 0 0 1 22,12 A10,6.2 0 0 1 2,12 Z" fill="none" stroke="url(#gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="12" cy="12" r="3" fill="url(#gold)" stroke="none"/>
-      <path d="M3,3 L21,21" fill="none" stroke="url(#gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <g transform="translate(72.8,72.8) scale(4.6)">
+      <path d="M2,12 A10,6.2 0 0 1 22,12 A10,6.2 0 0 1 2,12 Z" fill="none" stroke="url(#gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <circle cx="12" cy="12" r="3" fill="url(#gold)" stroke="none" />
+      <path d="M3,3 L21,21" fill="none" stroke="url(#gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
     </g>
   </g>
 
