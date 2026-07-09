@@ -1,0 +1,246 @@
+/* ==========================================================
+   LigronLink
+   Panel de Control V0.4
+   ========================================================== */
+
+.content{
+
+    flex:1;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:flex-start;
+
+    padding:28px 12px 20px;
+
+}
+
+.dashboard{
+
+    width:min(1360px,calc(100% - 24px));
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:24px;
+
+}
+
+.dashboard-header{
+
+    padding:26px 30px;
+
+    border-radius:20px;
+
+    background:rgba(15,20,28,.90);
+
+    border:1px solid var(--color-border);
+
+    box-shadow:var(--shadow-panel);
+
+}
+
+.dashboard-header h2{
+
+    margin:0;
+
+    font-size:2rem;
+
+    color:var(--color-text);
+
+}
+
+.dashboard-header p{
+
+    margin:10px 0 0;
+
+    color:var(--color-text-secondary);
+
+}
+
+.summary{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:20px;
+
+}
+
+.summary-card{
+
+    background:rgba(18,24,34,.92);
+
+    border:1px solid var(--color-border);
+
+    border-radius:18px;
+
+    padding:24px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    transition:.2s;
+
+}
+
+.summary-card:hover{
+
+    transform:translateY(-2px);
+
+    border-color:var(--color-border-hover);
+
+}
+
+.summary-value{
+
+    font-size:3rem;
+
+    font-weight:700;
+
+    color:var(--color-primary);
+
+}
+
+.summary-value.online{
+
+    color:var(--color-success);
+
+}
+
+.summary-value.offline{
+
+    color:var(--color-danger);
+
+}
+
+.summary-label{
+
+    margin-top:10px;
+
+    color:var(--color-text-secondary);
+
+    text-transform:uppercase;
+
+    letter-spacing:2px;
+
+    font-size:.85rem;
+
+}
+
+.panel{
+
+    background:rgba(18,24,34,.92);
+
+    border-radius:20px;
+
+    border:1px solid var(--color-border);
+
+    padding:26px;
+
+    box-shadow:var(--shadow-panel);
+
+}
+
+.panel-title{
+
+    margin-bottom:22px;
+
+    font-size:1.15rem;
+
+    font-weight:600;
+
+    color:var(--color-warning);
+
+    letter-spacing:.08em;
+
+    text-transform:uppercase;
+
+}
+
+.device-list{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+
+    gap:18px;
+
+}
+
+.empty-state{
+
+    padding:50px 30px;
+
+    border:2px dashed rgba(255,255,255,.08);
+
+    border-radius:18px;
+
+    text-align:center;
+
+}
+
+.empty-state h3{
+
+    margin:0;
+
+    color:var(--color-text);
+
+}
+
+.empty-state p{
+
+    margin:16px auto 30px;
+
+    max-width:500px;
+
+    color:var(--color-text-secondary);
+
+    line-height:1.7;
+
+}
+
+.activity{
+
+    color:var(--color-text-muted);
+
+}
+
+footer{
+
+    width:min(1360px,calc(100% - 24px));
+
+    margin:0 auto 12px;
+
+    padding:18px;
+
+    text-align:center;
+
+    border-radius:18px;
+
+    background:rgba(10,12,18,.45);
+
+    border-top:1px solid rgba(255,255,255,.05);
+
+    color:var(--color-text-muted);
+
+}
+
+@media(max-width:900px){
+
+    .summary{
+
+        grid-template-columns:1fr;
+
+    }
+
+}

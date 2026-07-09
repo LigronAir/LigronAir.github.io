@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <meta name="theme-color"
+          content="#0c0f14" />
+
+    <title>LigronLink | Panel de Control</title>
+
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/buttons.css" />
+    <link rel="stylesheet" href="css/icons.css" />
+    <link rel="stylesheet" href="css/header.css" />
+    <link rel="stylesheet" href="css/home.css" />
+
+</head>
+
+<body>
+
+<div class="page">
+
+    <!-- ===================================================== -->
+    <!-- HEADER -->
+    <!-- ===================================================== -->
+
+    <header class="ligron-header">
+
+        <div class="header-brand">
+
+            <img
+                class="header-logo"
+                src="ligron.png"
+                alt="LigronAir" />
+
+            <div class="header-text">
+
+                <h1 class="header-title">
+
+                    LigronAir
+
+                </h1>
+
+                <div class="header-subtitle">
+
+                    Sistema profesional para la interconexión de recursos
+                    en entornos de producción audiovisual
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div
+            class="header-actions"
+            id="headerActions">
+
+        </div>
+
+    </header>
+
+    <!-- ===================================================== -->
+    <!-- CONTENIDO -->
+    <!-- ===================================================== -->
+
+    <main class="content">
+
+        <section class="dashboard">
+
+            <!-- ========================================= -->
+
+            <div class="dashboard-header">
+
+                <div>
+
+                    <h2>
+
+                        Panel de Control
+
+                    </h2>
+
+                    <p>
+
+                        Panel privado de administración del ecosistema LigronAir.
+
+                    </p>
+
+                    <p class="dashboard-version">
+
+                        LigronLink Registry · V0.4
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- ========================================= -->
+
+            <section class="summary">
+
+                <article class="summary-card">
+
+                    <span class="summary-value"
+                          id="totalDevices">
+
+                        0
+
+                    </span>
+
+                    <span class="summary-label">
+
+                        Equipos
+
+                    </span>
+
+                </article>
+
+                <article class="summary-card">
+
+                    <span class="summary-value online">
+
+                        0
+
+                    </span>
+
+                    <span class="summary-label">
+
+                        Online
+
+                    </span>
+
+                </article>
+
+                <article class="summary-card">
+
+                    <span class="summary-value offline">
+
+                        0
+
+                    </span>
+
+                    <span class="summary-label">
+
+                        Offline
+
+                    </span>
+
+                </article>
+
+            </section>
+
+            <!-- ========================================= -->
+
+            <section class="panel">
+
+                <div class="panel-title">
+
+                    Mis equipos
+
+                </div>
+
+                <div
+                    id="deviceList"
+                    class="device-list">
+
+                    <div class="empty-state">
+
+                        <h3>
+
+                            Todavía no tienes equipos registrados
+
+                        </h3>
+
+                        <p>
+
+                            Registra tu primer LigronAir Native
+                            o Raspberry para comenzar a construir
+                            tu red LigronLink.
+
+                        </p>
+
+                        <button
+    id="registerDeviceButton"
+    class="ligron-button primary">
+
+    Registrar equipo
+
+</button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- ========================================= -->
+
+            <section class="panel">
+
+                <div class="panel-title">
+
+                    Actividad
+
+                </div>
+
+                <div class="activity">
+
+                    Sin actividad reciente.
+
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+    <!-- ===================================================== -->
+    <!-- FOOTER -->
+    <!-- ===================================================== -->
+
+    <footer>
+
+        LigronLink · Panel de Control · V0.4
+
+    </footer>
+
+</div>
+
+<script type="module"
+        src="js/header.js"></script>
+
+<script type="module"
+        src="js/home.js"></script>
+
+</body>
+
+</html>
