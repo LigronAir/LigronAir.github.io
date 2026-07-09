@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
         button.innerHTML = `
             <img
                 src="assets/iconos/mostrar.svg"
-                class="icon icon22"
+                class="icon icon40"
                 alt=""
                 aria-hidden="true" />
         `;
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 button.innerHTML = `
                     <img
                         src="assets/iconos/mostrar.svg"
-                        class="icon icon22"
+                        class="icon icon40"
                         alt=""
                         aria-hidden="true" />
                 `;
