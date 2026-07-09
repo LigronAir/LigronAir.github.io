@@ -80,7 +80,7 @@ form.addEventListener("submit", async function (event) {
             // Redirigir al espacio privado
             setTimeout(function () {
 
-                window.location.href = "index.html";
+                window.location.href = "home.html";
 
             }, 1000);
 

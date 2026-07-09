@@ -1,24 +1,19 @@
-/* ==========================================================
-   LigronLink
-   Home
-   ========================================================== */
+// ==========================================================
+// LigronLink
+// Home
+// ==========================================================
 
-document.addEventListener("DOMContentLoaded", () => {
+import { getUser } from "./session.js";
 
-    console.log("LigronLink V0.4");
+const user = getUser();
 
-    const session = JSON.parse(
-        localStorage.getItem("ligronair_session") || "{}"
-    );
+if (!user) {
 
-    if (!session.email) {
+    window.location.href = "login.html";
 
-        window.location.href = "login.html";
+}
+else {
 
-        return;
+    console.log("Bienvenido", user.nombre);
 
-    }
-
-    console.log("Usuario autenticado:", session.email);
-
-});
+}
