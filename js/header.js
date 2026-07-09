@@ -18,7 +18,7 @@ if (header) {
             <span class="header-user">
                 <img
                     src="assets/iconos/usuario.svg"
-                    class="icon icon24"
+                    class="icon icon40"
                     alt=""
                     aria-hidden="true" />
                 <span class="header-user-name">${user.nombre}</span>
