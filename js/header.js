@@ -47,7 +47,7 @@ if (header) {
 
                 <img
                     src="assets/iconos/usuario.svg"
-                    class="icon icon24"
+                    class="icon icon40"
                     alt=""
                     aria-hidden="true" />
 

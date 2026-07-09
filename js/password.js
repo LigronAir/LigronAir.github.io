@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 button.innerHTML = `
                     <img
                         src="assets/iconos/ocultar.svg"
-                        class="icon icon22"
+                        class="icon icon40"
                         alt=""
                         aria-hidden="true" />
                 `;
