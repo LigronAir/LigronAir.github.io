@@ -5,7 +5,7 @@
 
 export function openDeviceRegisterDialog() {
 
-    dialog.open({
+    window.dialog.open({
 
         title: "Registrar equipo",
 
@@ -91,7 +91,7 @@ export function openDeviceRegisterDialog() {
 
                 action: () => {
 
-                    dialog.close();
+                    window.dialog.close();
 
                 }
 
@@ -115,14 +115,12 @@ export function openDeviceRegisterDialog() {
                         document.getElementById("deviceUuid").value.trim();
 
                     console.log({
-
                         tipo,
                         alias,
                         uuid
-
                     });
 
-                    dialog.close();
+                    window.dialog.close();
 
                 }
 
