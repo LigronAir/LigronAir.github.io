@@ -1,0 +1,190 @@
+/* ==========================================================
+   LigronLink
+   Forms V1
+   ========================================================== */
+
+/* ==========================================================
+   FORMULARIO
+   ========================================================== */
+
+.device-register-form {
+
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+
+}
+
+/* ==========================================================
+   GRUPOS
+   ========================================================== */
+
+.form-group {
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+}
+
+/* ==========================================================
+   ETIQUETAS
+   ========================================================== */
+
+.form-group label {
+
+    color: var(--color-text);
+
+    font-size: 0.95rem;
+
+    font-weight: 600;
+
+    letter-spacing: .03em;
+
+}
+
+/* ==========================================================
+   INPUTS
+   ========================================================== */
+
+.form-group input,
+.form-group select {
+
+    width: 100%;
+
+    padding: 14px 16px;
+
+    border-radius: 12px;
+
+    border: 1px solid var(--color-border);
+
+    background:
+
+        linear-gradient(
+            180deg,
+            rgba(18,23,31,.96),
+            rgba(13,18,24,.96)
+        );
+
+    color: var(--color-text);
+
+    font-family: inherit;
+
+    font-size: .95rem;
+
+    box-sizing: border-box;
+
+    transition:
+        border-color .20s ease,
+        box-shadow .20s ease,
+        background .20s ease;
+
+}
+
+/* ==========================================================
+   PLACEHOLDER
+   ========================================================== */
+
+.form-group input::placeholder {
+
+    color: var(--color-text-muted);
+
+}
+
+/* ==========================================================
+   FOCUS
+   ========================================================== */
+
+.form-group input:focus,
+.form-group select:focus {
+
+    outline: none;
+
+    border-color: var(--color-primary);
+
+    box-shadow:
+
+        0 0 0 3px rgba(47,140,255,.15);
+
+}
+
+/* ==========================================================
+   HOVER
+   ========================================================== */
+
+.form-group input:hover,
+.form-group select:hover {
+
+    border-color: var(--color-border-hover);
+
+}
+
+/* ==========================================================
+   SELECT
+   ========================================================== */
+
+.form-group select {
+
+    cursor: pointer;
+
+}
+
+/* ==========================================================
+   DESCRIPCIÓN
+   ========================================================== */
+
+.form-help {
+
+    margin-top: -4px;
+
+    color: var(--color-text-muted);
+
+    font-size: .82rem;
+
+    line-height: 1.5;
+
+}
+
+/* ==========================================================
+   ERROR
+   ========================================================== */
+
+.form-error {
+
+    color: var(--color-danger);
+
+    font-size: .82rem;
+
+    margin-top: 4px;
+
+}
+
+/* ==========================================================
+   CAMPOS INVÁLIDOS
+   ========================================================== */
+
+.form-group.invalid input,
+.form-group.invalid select {
+
+    border-color: var(--color-danger);
+
+    box-shadow:
+
+        0 0 0 3px rgba(217,91,91,.14);
+
+}
+
+/* ==========================================================
+   CAMPOS CORRECTOS
+   ========================================================== */
+
+.form-group.valid input,
+.form-group.valid select {
+
+    border-color: var(--color-success);
+
+    box-shadow:
+
+        0 0 0 3px rgba(67,193,107,.14);
+
+}

@@ -103,7 +103,7 @@ export function openDeviceRegisterDialog() {
 
                 class: "primary",
 
-                action: () => {
+                action: async () => {
 
                     const tipo =
                         document.getElementById("deviceType").value;
@@ -114,13 +114,56 @@ export function openDeviceRegisterDialog() {
                     const uuid =
                         document.getElementById("deviceUuid").value.trim();
 
-                    console.log({
-                        tipo,
-                        alias,
-                        uuid
-                    });
+                    try {
 
-                    window.dialog.close();
+                        const response = await fetch(
+
+                            "https://ligronlink.sacben.ligronair.tv/api/v1/device/register",
+
+                            {
+
+                                method: "POST",
+
+                                headers: {
+
+                                    "Content-Type": "application/json"
+
+                                },
+
+                                body: JSON.stringify({
+
+                                    tipo,
+                                    alias,
+                                    uuid
+
+                                })
+
+                            }
+
+                        );
+
+                        const result = await response.json();
+
+                        if (!response.ok || !result.success) {
+
+                            alert(result.error || "No se pudo registrar el equipo.");
+
+                            return;
+
+                        }
+
+                        alert("Equipo registrado correctamente.");
+
+                        window.dialog.close();
+
+                    }
+                    catch (error) {
+
+                        console.error(error);
+
+                        alert("No se pudo conectar con LigronLink.");
+
+                    }
 
                 }
 

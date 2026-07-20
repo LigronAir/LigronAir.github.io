@@ -1,6 +1,6 @@
 /* ==========================================================
    LigronLink
-   Dialog Component V1
+   Dialog Component V2
    ========================================================== */
 
 /* ==========================================================
@@ -10,23 +10,19 @@
 .ligron-dialog-overlay {
 
     position: fixed;
-
     inset: 0;
 
     display: flex;
-
     justify-content: center;
-
     align-items: center;
 
     padding: 32px;
 
-    background: rgba(0,0,0,0.65);
+    background: rgba(0, 0, 0, 0.72);
 
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(10px);
 
     opacity: 0;
-
     visibility: hidden;
 
     transition:
@@ -40,7 +36,6 @@
 .ligron-dialog-overlay.open {
 
     opacity: 1;
-
     visibility: visible;
 
 }
@@ -51,41 +46,41 @@
 
 .ligron-dialog {
 
-    width: min(560px, 100%);
+    width: min(640px, calc(100vw - 40px));
 
-    border-radius: 22px;
+    max-height: calc(100vh - 60px);
+
+    display: flex;
+    flex-direction: column;
 
     overflow: hidden;
+
+    border-radius: 22px;
 
     border: 1px solid var(--color-border);
 
     background:
-
         linear-gradient(
-
             180deg,
-
-            rgba(22,28,38,.98),
-
-            rgba(17,22,30,.98)
-
+            rgba(22, 28, 38, .98) 0%,
+            rgba(17, 22, 30, .98) 100%
         );
 
     box-shadow:
+        0 30px 80px rgba(0,0,0,.45),
+        inset 0 1px 0 rgba(255,255,255,.04);
 
-        0 24px 60px rgba(0,0,0,.45),
+    transform: translateY(20px) scale(.98);
 
-        inset 0 1px 0 rgba(255,255,255,.03);
-
-    transform: translateY(18px);
-
-    transition: transform .25s ease;
+    transition:
+        transform .25s ease,
+        opacity .25s ease;
 
 }
 
 .ligron-dialog-overlay.open .ligron-dialog {
 
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
 
 }
 
@@ -95,57 +90,75 @@
 
 .ligron-dialog-header {
 
-    display:flex;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-    justify-content:space-between;
+    padding: 22px 28px;
 
-    align-items:center;
+    border-bottom: 1px solid var(--color-border);
 
-    padding:22px 24px;
-
-    border-bottom:1px solid var(--color-border);
-
-}
-
-.ligron-dialog-title{
-
-    margin:0;
-
-    color:var(--color-text);
-
-    font-size:1.2rem;
-
-    font-weight:600;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,.015),
+            rgba(255,255,255,0)
+        );
 
 }
 
-.ligron-dialog-close{
+.ligron-dialog-title {
 
-    width:38px;
+    margin: 0;
 
-    height:38px;
+    color: var(--color-text);
 
-    border:none;
+    font-size: 1.35rem;
 
-    border-radius:10px;
+    font-weight: 700;
 
-    cursor:pointer;
-
-    background:transparent;
-
-    color:var(--color-text-secondary);
-
-    font-size:1.3rem;
-
-    transition:.20s;
+    letter-spacing: .02em;
 
 }
 
-.ligron-dialog-close:hover{
+/* ==========================================================
+   BOTÓN CERRAR
+   ========================================================== */
 
-    background:rgba(255,255,255,.06);
+.ligron-dialog-close {
 
-    color:white;
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: none;
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    background: transparent;
+
+    color: var(--color-text-secondary);
+
+    font-size: 1.35rem;
+
+    transition:
+        background .20s,
+        color .20s,
+        transform .20s;
+
+}
+
+.ligron-dialog-close:hover {
+
+    background: rgba(255,255,255,.06);
+
+    color: white;
+
+    transform: rotate(90deg);
 
 }
 
@@ -153,11 +166,15 @@
    BODY
    ========================================================== */
 
-.ligron-dialog-body{
+.ligron-dialog-body {
 
-    padding:26px;
+    flex: 1;
 
-    color:var(--color-text);
+    padding: 30px 28px;
+
+    overflow-y: auto;
+
+    color: var(--color-text);
 
 }
 
@@ -165,16 +182,21 @@
    FOOTER
    ========================================================== */
 
-.ligron-dialog-footer{
+.ligron-dialog-footer {
 
-    display:flex;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
 
-    justify-content:flex-end;
+    padding: 18px 28px;
 
-    gap:14px;
+    border-top: 1px solid var(--color-border);
 
-    padding:20px 24px;
-
-    border-top:1px solid var(--color-border);
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,.01),
+            rgba(255,255,255,0)
+        );
 
 }
