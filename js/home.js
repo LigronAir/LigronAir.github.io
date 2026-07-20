@@ -4,6 +4,7 @@
 // ==========================================================
 
 import { getUser } from "./session.js";
+import { openDeviceRegisterDialog } from "./deviceRegister.js";
 
 // ==========================================================
 // Comprobar sesión
@@ -34,60 +35,7 @@ if (registerButton) {
 
     registerButton.addEventListener("click", () => {
 
-        dialog.open({
-
-            title: "Registrar equipo",
-
-            content: `
-
-                <p>
-
-                    Bienvenido al sistema de registro de equipos
-                    de LigronLink.
-
-                </p>
-
-                <p>
-
-                    En el siguiente paso aparecerá aquí el formulario.
-
-                </p>
-
-            `,
-
-            buttons: [
-
-                {
-
-                    text: "Cerrar",
-
-                    class: "secondary",
-
-                    action: () => {
-
-                        dialog.close();
-
-                    }
-
-                },
-
-                {
-
-                    text: "Continuar",
-
-                    class: "primary",
-
-                    action: () => {
-
-                        alert("Siguiente paso: formulario.");
-
-                    }
-
-                }
-
-            ]
-
-        });
+        openDeviceRegisterDialog();
 
     });
 
