@@ -2,6 +2,7 @@
 // LigronLink
 // Device Register
 // ==========================================================
+console.log("DEVICE REGISTER V2");
 
 export function openDeviceRegisterDialog() {
 
