@@ -41,9 +41,11 @@ async function init() {
     }
     catch (error) {
 
-        console.error(error);
+    console.error("ERROR");
 
-    }
+    console.error(error);
+
+}
 
 }
 

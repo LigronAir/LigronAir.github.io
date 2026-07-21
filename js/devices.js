@@ -12,13 +12,19 @@ const API =
 
 export async function loadDevices() {
 
+    console.log("=== LOAD DEVICES ===");
+
     const response = await fetch(
 
         API + "/devices"
 
     );
 
+    console.log("HTTP:", response.status);
+
     const result = await response.json();
+
+    console.log("RESULTADO:", result);
 
     if (!response.ok || !result.success) {
 
