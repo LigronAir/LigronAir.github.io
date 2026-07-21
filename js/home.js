@@ -32,6 +32,47 @@ else {
 
         console.log("DEVICES:", devices);
 
+        // ### FIX: obtener referencias a los contadores
+        const totalDevices =
+            document.getElementById("totalDevices");
+
+        const onlineDevices =
+            document.getElementById("onlineDevices");
+
+        const offlineDevices =
+            document.getElementById("offlineDevices");
+
+        // ### FIX: calcular estadísticas
+        const total =
+            devices.length;
+
+        const online =
+            devices.filter(device =>
+                device.estado === "ONLINE"
+            ).length;
+
+        const offline =
+            total - online;
+
+        // ### FIX: actualizar la interfaz
+        if (totalDevices) {
+
+            totalDevices.textContent = total;
+
+        }
+
+        if (onlineDevices) {
+
+            onlineDevices.textContent = online;
+
+        }
+
+        if (offlineDevices) {
+
+            offlineDevices.textContent = offline;
+
+        }
+
     }
     catch (error) {
 
