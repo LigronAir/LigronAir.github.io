@@ -7,9 +7,7 @@ import { getUser } from "./session.js";
 import { openDeviceRegisterDialog } from "./deviceRegister.js";
 import { loadDevices } from "./devices.js";
 
-// ==========================================================
-// Comprobar sesión
-// ==========================================================
+console.log("HOME CARGADO");
 
 const user = getUser();
 
@@ -24,38 +22,31 @@ else {
 
 }
 
-// ==========================================================
-// Inicializar
-// ==========================================================
+(async () => {
 
-init();
-
-async function init() {
+    console.log("ANTES DE LOAD");
 
     try {
 
         const devices = await loadDevices();
 
-        console.log("Equipos:", devices);
+        console.log("DEVICES:", devices);
 
     }
     catch (error) {
 
-    console.error("ERROR");
+        console.error("ERROR EN LOAD");
 
-    console.error(error);
+        console.error(error);
 
-}
+    }
 
-}
+    console.log("FIN");
 
-// ==========================================================
-// Registrar equipo
-// ==========================================================
+})();
 
-const registerButton = document.getElementById(
-    "registerDeviceButton"
-);
+const registerButton =
+    document.getElementById("registerDeviceButton");
 
 if (registerButton) {
 
