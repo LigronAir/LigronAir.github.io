@@ -118,7 +118,7 @@ export function openDeviceRegisterDialog() {
 
                         const response = await fetch(
 
-                            "https://ligronlink.sacben.ligronair.tv/api/v1/device/register",
+                            "https://ligronlink.ligronlink-dev.workers.dev/api/v1/device/register",
 
                             {
 
