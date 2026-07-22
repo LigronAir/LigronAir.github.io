@@ -5,7 +5,10 @@
 
 import { getUser } from "./session.js";
 import { openDeviceRegisterDialog } from "./deviceRegister.js";
-import { loadDevices } from "./devices.js";
+import {
+    loadDevices,
+    deleteDevice
+} from "./devices.js";
 
 console.log("HOME CARGADO");
 
@@ -42,6 +45,44 @@ function getDeviceTypeName(type) {
         default:
 
             return type || "Equipo";
+
+    }
+
+}
+
+// ==========================================================
+// ### FIX
+// Eliminar equipo
+// ==========================================================
+
+async function removeDevice(device) {
+
+    const confirmar = confirm(
+
+        `¿Eliminar el equipo "${device.alias}"?`
+
+    );
+
+    if (!confirmar) {
+
+        return;
+
+    }
+
+    try {
+
+        await deleteDevice(device.id);
+
+        alert("Equipo eliminado correctamente.");
+
+        location.reload();
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+        alert(error.message);
 
     }
 
@@ -104,7 +145,7 @@ function renderDevices(devices) {
                 </button>
 
                 <button
-                    class="ligron-button">
+                    class="ligron-button delete-button">
 
                     Eliminar
 
@@ -113,6 +154,15 @@ function renderDevices(devices) {
             </div>
 
         `;
+
+        const deleteButton =
+            card.querySelector(".delete-button");
+
+        deleteButton.addEventListener("click", () => {
+
+            removeDevice(device);
+
+        });
 
         deviceList.appendChild(card);
 

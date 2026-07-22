@@ -39,3 +39,44 @@ export async function loadDevices() {
     return result.devices;
 
 }
+
+// ==========================================================
+// ### FIX
+// Eliminar equipo
+// ==========================================================
+
+export async function deleteDevice(deviceId) {
+
+    console.log("=== DELETE DEVICE ===");
+
+    const response = await fetch(
+
+        API + "/device/" + deviceId,
+
+        {
+
+            method: "DELETE"
+
+        }
+
+    );
+
+    console.log("HTTP:", response.status);
+
+    const result = await response.json();
+
+    console.log("RESULTADO:", result);
+
+    if (!response.ok || !result.success) {
+
+        throw new Error(
+
+            result.error || "No se pudo eliminar el equipo."
+
+        );
+
+    }
+
+    return true;
+
+}
