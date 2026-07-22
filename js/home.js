@@ -27,6 +27,22 @@ else {
 
 // ==========================================================
 // ### FIX
+// Escapar HTML
+// ==========================================================
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+// ==========================================================
+// ### FIX
 // Obtener nombre amigable del tipo de equipo
 // ==========================================================
 
@@ -253,70 +269,78 @@ function renderDevices(devices) {
 
         row.innerHTML = `
 
-            <td class="devices-cell status ${status.toLowerCase()}">
+            <td class="devices-cell status-cell">
 
-                <span class="status-dot"></span>
+                <div class="devices-status ${status.toLowerCase()}">
 
-                <span class="status-label">
+                    <span class="status-dot"></span>
 
-                    ${status}
+                    <span class="status-label">
 
-                </span>
+                        ${escapeHtml(status)}
+
+                    </span>
+
+                </div>
 
             </td>
 
-            <td class="devices-cell name">
+            <td class="devices-cell name-cell">
 
-                <strong class="device-main-name">
+                <span class="device-main-name">
 
-                    ${friendlyType}
+                    ${escapeHtml(friendlyType)}
 
-                </strong>
+                </span>
 
                 <span class="device-main-alias">
 
-                    ${device.alias || "Sin alias"}
+                    ${escapeHtml(device.alias || "Sin alias")}
 
                 </span>
 
             </td>
 
-            <td class="devices-cell type">
+            <td class="devices-cell type-cell">
 
-                ${friendlyType}
-
-            </td>
-
-            <td class="devices-cell uuid"
-                title="${device.uuid || "—"}">
-
-                ${device.uuid || "—"}
+                ${escapeHtml(friendlyType)}
 
             </td>
 
-            <td class="devices-cell registered">
+            <td class="devices-cell uuid-cell"
+                title="${escapeHtml(device.uuid || "—")}">
 
-                ${formatDate(device.fecha_creacion)}
+                ${escapeHtml(device.uuid || "—")}
 
             </td>
 
-            <td class="devices-cell actions">
+            <td class="devices-cell registered-cell">
 
-                <button
-                    type="button"
-                    class="ligron-button edit-button">
+                ${escapeHtml(formatDate(device.fecha_creacion))}
 
-                    Editar
+            </td>
 
-                </button>
+            <td class="devices-cell actions-cell">
 
-                <button
-                    type="button"
-                    class="ligron-button delete-button">
+                <div class="devices-actions">
 
-                    Eliminar
+                    <button
+                        type="button"
+                        class="ligron-button edit-button">
 
-                </button>
+                        Editar
+
+                    </button>
+
+                    <button
+                        type="button"
+                        class="ligron-button delete-button">
+
+                        Eliminar
+
+                    </button>
+
+                </div>
 
             </td>
 
