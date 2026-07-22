@@ -22,6 +22,104 @@ else {
 
 }
 
+// ==========================================================
+// ### FIX
+// Obtener nombre amigable del tipo de equipo
+// ==========================================================
+
+function getDeviceTypeName(type) {
+
+    switch ((type || "").toLowerCase()) {
+
+        case "ligronair":
+
+            return "LigronAir Native";
+
+        case "ligronpi":
+
+            return "LigronPi";
+
+        default:
+
+            return type || "Equipo";
+
+    }
+
+}
+
+// ==========================================================
+// ### FIX
+// Renderizar listado de equipos
+// ==========================================================
+
+function renderDevices(devices) {
+
+    const deviceList =
+        document.getElementById("deviceList");
+
+    if (!deviceList) {
+
+        return;
+
+    }
+
+    // Si no hay equipos dejamos el HTML original
+    if (devices.length === 0) {
+
+        return;
+
+    }
+
+    // Sustituimos el estado vacío por el listado
+    deviceList.innerHTML = "";
+
+    devices.forEach(device => {
+
+        const card =
+            document.createElement("div");
+
+        card.className = "device-card";
+
+        card.innerHTML = `
+
+            <div class="device-header">
+
+                <strong>${getDeviceTypeName(device.tipo)}</strong>
+
+            </div>
+
+            <div class="device-alias">
+
+                Alias.............. ${device.alias}
+
+            </div>
+
+            <div class="device-actions">
+
+                <button
+                    class="ligron-button">
+
+                    Editar
+
+                </button>
+
+                <button
+                    class="ligron-button">
+
+                    Eliminar
+
+                </button>
+
+            </div>
+
+        `;
+
+        deviceList.appendChild(card);
+
+    });
+
+}
+
 (async () => {
 
     console.log("ANTES DE LOAD");
@@ -72,6 +170,13 @@ else {
             offlineDevices.textContent = offline;
 
         }
+
+        // ==================================================
+        // ### FIX
+        // Mostrar listado de equipos
+        // ==================================================
+
+        renderDevices(devices);
 
     }
     catch (error) {
