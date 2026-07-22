@@ -173,73 +173,90 @@
             <!-- ### FIX: tabla de equipos -->
             <!-- ========================================= -->
 
-            <section class="panel">
+            <section class="panel devices-panel">
 
                 <div class="devices-table">
 
-                    <div class="devices-table-header">
+                    <table class="devices-table-element">
 
-                        <div class="devices-table-col estado">
+                        <colgroup>
 
-                            Estado
+                            <col class="col-status" />
+                            <col class="col-name" />
+                            <col class="col-type" />
+                            <col class="col-uuid" />
+                            <col class="col-registered" />
+                            <col class="col-actions" />
 
-                        </div>
+                        </colgroup>
 
-                        <div class="devices-table-col nombre">
+                        <thead>
 
-                            Nombre
+                            <tr>
 
-                        </div>
+                                <th>
+                                    Estado
+                                </th>
 
-                        <div class="devices-table-col tipo">
+                                <th>
+                                    Nombre / Alias
+                                </th>
 
-                            Tipo
+                                <th>
+                                    Tipo
+                                </th>
 
-                        </div>
+                                <th>
+                                    UUID
+                                </th>
 
-                        <div class="devices-table-col uuid">
+                                <th>
+                                    Registrado
+                                </th>
 
-                            UUID
+                                <th>
+                                    Acciones
+                                </th>
 
-                        </div>
+                            </tr>
 
-                        <div class="devices-table-col registrado">
+                        </thead>
 
-                            Registrado
+                        <tbody
+                            id="deviceList"
+                            class="devices-table-body">
 
-                        </div>
+                            <tr class="devices-empty-row">
 
-                        <div class="devices-table-col acciones">
+                                <td
+                                    colspan="6"
+                                    class="devices-empty-cell">
 
-                            Acciones
+                                    <div class="empty-state">
 
-                        </div>
+                                        <h3>
 
-                    </div>
+                                            Todavía no tienes equipos registrados
 
-                    <div
-                        id="deviceList"
-                        class="devices-table-body">
+                                        </h3>
 
-                        <div class="empty-state">
+                                        <p>
 
-                            <h3>
+                                            Registra tu primer LigronAir Native
+                                            o Raspberry para comenzar a construir
+                                            tu red LigronLink.
 
-                                Todavía no tienes equipos registrados
+                                        </p>
 
-                            </h3>
+                                    </div>
 
-                            <p>
+                                </td>
 
-                                Registra tu primer LigronAir Native
-                                o Raspberry para comenzar a construir
-                                tu red LigronLink.
+                            </tr>
 
-                            </p>
+                        </tbody>
 
-                        </div>
-
-                    </div>
+                    </table>
 
                 </div>
 

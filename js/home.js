@@ -91,7 +91,6 @@ function formatDate(value) {
 
 function updateCounters(devices) {
 
-    // ### FIX: obtener referencias a los contadores
     const totalDevices =
         document.getElementById("totalDevices");
 
@@ -101,7 +100,6 @@ function updateCounters(devices) {
     const offlineDevices =
         document.getElementById("offlineDevices");
 
-    // ### FIX: calcular estadísticas
     const total =
         devices.length;
 
@@ -114,7 +112,6 @@ function updateCounters(devices) {
     const offline =
         total - online;
 
-    // ### FIX: actualizar la interfaz
     if (totalDevices) {
 
         totalDevices.textContent = total;
@@ -206,23 +203,33 @@ function renderDevices(devices) {
 
         deviceList.innerHTML = `
 
-            <div class="empty-state">
+            <tr class="devices-empty-row">
 
-                <h3>
+                <td
+                    colspan="6"
+                    class="devices-empty-cell">
 
-                    Todavía no tienes equipos registrados
+                    <div class="empty-state">
 
-                </h3>
+                        <h3>
 
-                <p>
+                            Todavía no tienes equipos registrados
 
-                    Registra tu primer LigronAir Native
-                    o Raspberry para comenzar a construir
-                    tu red LigronLink.
+                        </h3>
 
-                </p>
+                        <p>
 
-            </div>
+                            Registra tu primer LigronAir Native
+                            o Raspberry para comenzar a construir
+                            tu red LigronLink.
+
+                        </p>
+
+                    </div>
+
+                </td>
+
+            </tr>
 
         `;
 
@@ -233,47 +240,67 @@ function renderDevices(devices) {
     devices.forEach(device => {
 
         const row =
-            document.createElement("div");
+            document.createElement("tr");
 
         const status =
             String(device.estado || "OFFLINE")
                 .toUpperCase();
 
+        const friendlyType =
+            getDeviceTypeName(device.tipo);
+
         row.className = "devices-row";
 
         row.innerHTML = `
 
-            <div class="devices-cell status ${status.toLowerCase()}">
+            <td class="devices-cell status ${status.toLowerCase()}">
 
-                ${status}
+                <span class="status-dot"></span>
 
-            </div>
+                <span class="status-label">
 
-            <div class="devices-cell">
+                    ${status}
 
-                <strong>${device.alias || "Sin alias"}</strong>
+                </span>
 
-            </div>
+            </td>
 
-            <div class="devices-cell">
+            <td class="devices-cell name">
 
-                ${getDeviceTypeName(device.tipo)}
+                <strong class="device-main-name">
 
-            </div>
+                    ${friendlyType}
 
-            <div class="devices-cell">
+                </strong>
+
+                <span class="device-main-alias">
+
+                    ${device.alias || "Sin alias"}
+
+                </span>
+
+            </td>
+
+            <td class="devices-cell type">
+
+                ${friendlyType}
+
+            </td>
+
+            <td class="devices-cell uuid"
+                title="${device.uuid || "—"}">
 
                 ${device.uuid || "—"}
 
-            </div>
+            </td>
 
-            <div class="devices-cell">
+            <td class="devices-cell registered">
 
                 ${formatDate(device.fecha_creacion)}
 
-            </div>
+            </td>
 
-            <div class="devices-cell actions">
+            <td class="devices-cell actions">
 
                 <button
                     type="button"
@@ -291,7 +318,7 @@ function renderDevices(devices) {
 
                 </button>
 
-            </div>
+            </td>
 
         `;
 
