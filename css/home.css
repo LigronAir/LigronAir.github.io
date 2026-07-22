@@ -1,6 +1,6 @@
 /* ==========================================================
    LigronLink
-   Panel de Control V0.4
+   Panel de Control V0.5
    ========================================================== */
 
 /* ==========================================================
@@ -88,7 +88,7 @@ body::after {
    ========================================================== */
 
 .dashboard-header {
-    padding: 28px 32px;
+    padding: 24px 32px;
     border-radius: 22px;
     background:
         linear-gradient(
@@ -102,6 +102,10 @@ body::after {
         inset 0 1px 0 rgba(255, 255, 255, 0.04);
     position: relative;
     overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
 }
 
 .dashboard-header::before {
@@ -118,6 +122,10 @@ body::after {
 .dashboard-header > * {
     position: relative;
     z-index: 1;
+}
+
+.dashboard-header-copy {
+    min-width: 0;
 }
 
 .dashboard-header h2 {
@@ -142,6 +150,18 @@ body::after {
     font-size: 0.84rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
+}
+
+.dashboard-header-actions {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    padding-top: 4px;
+}
+
+.dashboard-header-actions .ligron-button.primary {
+    min-width: 190px;
 }
 
 /* ==========================================================
@@ -263,13 +283,13 @@ body::after {
    ========================================================== */
 
 .device-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .empty-state {
-    padding: 54px 32px;
+    padding: 32px 28px;
     border: 1px dashed rgba(255, 255, 255, 0.10);
     border-radius: 18px;
     text-align: center;
@@ -283,14 +303,76 @@ body::after {
 }
 
 .empty-state p {
-    margin: 16px auto 28px;
-    max-width: 520px;
+    margin: 16px auto 0;
+    max-width: 560px;
     color: var(--color-text-secondary);
     line-height: 1.72;
 }
 
-.empty-state .ligron-button {
-    min-width: 190px;
+.device-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+        "header actions"
+        "alias actions";
+    gap: 8px 18px;
+    padding: 18px 20px;
+    border-radius: 18px;
+    border: 1px solid var(--color-border);
+    background:
+        linear-gradient(
+            180deg,
+            rgba(18, 23, 31, 0.96) 0%,
+            rgba(13, 18, 24, 0.96) 100%
+        );
+    box-shadow:
+        0 12px 28px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.device-header {
+    grid-area: header;
+    min-width: 0;
+}
+
+.device-header strong {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--color-text);
+    font-size: 1.02rem;
+    font-weight: 700;
+}
+
+.device-alias {
+    grid-area: alias;
+    color: var(--color-text-secondary);
+    font-size: 0.93rem;
+    line-height: 1.45;
+}
+
+.device-actions {
+    grid-area: actions;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    align-self: center;
+    justify-self: end;
+}
+
+.device-actions .ligron-button {
+    min-width: 104px;
+    padding-inline: 14px;
+}
+
+.device-actions .delete-button {
+    color: #ff6d6d;
+    border-color: rgba(255, 109, 109, 0.35);
+}
+
+.device-actions .delete-button:hover {
+    border-color: rgba(255, 109, 109, 0.6);
+    box-shadow: 0 0 0 3px rgba(255, 109, 109, 0.08);
 }
 
 .activity {
@@ -318,6 +400,19 @@ footer {
    RESPONIVE
    ========================================================== */
 
+@media (max-width: 1100px) {
+
+    .dashboard-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .dashboard-header-actions {
+        justify-content: flex-start;
+        padding-top: 0;
+    }
+}
+
 @media (max-width: 900px) {
 
     .summary {
@@ -332,7 +427,20 @@ footer {
         padding: 22px 18px;
     }
 
-    .device-list {
+    .device-card {
         grid-template-columns: 1fr;
+        grid-template-areas:
+            "header"
+            "alias"
+            "actions";
+    }
+
+    .device-actions {
+        justify-self: start;
+        flex-wrap: wrap;
+    }
+
+    .device-actions .ligron-button {
+        min-width: 0;
     }
 }

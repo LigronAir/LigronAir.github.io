@@ -20,7 +20,6 @@
     <link rel="stylesheet" href="css/dialog.css" />
     <link rel="stylesheet" href="css/forms.css" />
 
-
 </head>
 
 <body>
@@ -76,10 +75,12 @@
         <section class="dashboard">
 
             <!-- ========================================= -->
+            <!-- ### FIX: subcabecera del panel -->
+            <!-- ========================================= -->
 
             <div class="dashboard-header">
 
-                <div>
+                <div class="dashboard-header-copy">
 
                     <h2>
 
@@ -95,9 +96,21 @@
 
                     <p class="dashboard-version">
 
-                        LigronLink Registry · V0.4
+                        LigronLink Registry · V0.5
 
                     </p>
+
+                </div>
+
+                <div class="dashboard-header-actions">
+
+                    <button
+                        id="registerDeviceButton"
+                        class="ligron-button primary">
+
+                        + Registrar equipo
+
+                    </button>
 
                 </div>
 
@@ -126,7 +139,6 @@
 
                 <article class="summary-card">
 
-                    <!-- ### FIX: añadido id para poder actualizar el contador -->
                     <span
                         id="onlineDevices"
                         class="summary-value online">
@@ -145,7 +157,6 @@
 
                 <article class="summary-card">
 
-                    <!-- ### FIX: añadido id para poder actualizar el contador -->
                     <span
                         id="offlineDevices"
                         class="summary-value offline">
@@ -194,14 +205,6 @@
 
                         </p>
 
-                        <button
-                            id="registerDeviceButton"
-                            class="ligron-button primary">
-
-                            Registrar equipo
-
-                        </button>
-
                     </div>
 
                 </div>
@@ -236,7 +239,7 @@
 
     <footer>
 
-        LigronLink · Panel de Control · V0.4
+        LigronLink · Panel de Control · V0.5
 
     </footer>
 
