@@ -8,7 +8,7 @@ import { openDeviceRegisterDialog } from "./deviceRegister.js";
 import {
     loadDevices,
     deleteDevice
-} from "./devices.js";
+} from "./deviceApi.js";
 
 console.log("HOME CARGADO");
 
