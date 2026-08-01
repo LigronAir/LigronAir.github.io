@@ -7,6 +7,28 @@ const API =
     "https://ligronlink.ligronlink-dev.workers.dev/api/v1";
 
 // ==========================================================
+// ### FIX
+// Obtener usuario autenticado
+// ==========================================================
+
+function getCurrentUser() {
+
+    const raw =
+        localStorage.getItem("ligronlink-user");
+
+    if (!raw) {
+
+        throw new Error(
+            "No existe una sesión iniciada."
+        );
+
+    }
+
+    return JSON.parse(raw);
+
+}
+
+// ==========================================================
 // Obtener equipos
 // ==========================================================
 
@@ -14,9 +36,18 @@ export async function loadDevices() {
 
     console.log("=== LOAD DEVICES ===");
 
+    // ======================================================
+    // ### FIX
+    // Obtener el usuario autenticado
+    // ======================================================
+
+    const user = getCurrentUser();
+
     const response = await fetch(
 
-        API + "/devices"
+        API +
+        "/devices?email=" +
+        encodeURIComponent(user.email)
 
     );
 

@@ -1,39 +1,115 @@
 // ==========================================================
-// LigronAir
-// session.js
-// Gestión de sesión del navegador
+// LigronLink
+// Gestión de equipos
 // ==========================================================
 
-export function saveUser(user) {
+const API =
+    "https://ligronlink.ligronlink-dev.workers.dev/api/v1";
 
-    localStorage.setItem(
+// ==========================================================
+// ### FIX
+// Obtener usuario autenticado
+// ==========================================================
 
-        "ligronUser",
+function getCurrentUser() {
 
-        JSON.stringify(user)
+    const raw =
+        localStorage.getItem("ligronUser");
 
-    );
+    if (!raw) {
 
-}
-
-export function getUser() {
-
-    const data = localStorage.getItem("ligronUser");
-
-    if (!data) {
-
-        return null;
+        throw new Error(
+            "No existe una sesión iniciada."
+        );
 
     }
 
-    return JSON.parse(data);
+    return JSON.parse(raw);
 
 }
 
-export function logout() {
+// ==========================================================
+// Obtener equipos
+// ==========================================================
 
-    localStorage.removeItem("ligronUser");
+export async function loadDevices() {
 
-    window.location.href = "index.html";
+    console.log("=== LOAD DEVICES ===");
+
+    const user =
+        getCurrentUser();
+
+    const response =
+        await fetch(
+
+            API +
+            "/devices?email=" +
+            encodeURIComponent(user.email)
+
+        );
+
+    console.log("HTTP:", response.status);
+
+    const result =
+        await response.json();
+
+    console.log("RESULTADO:", result);
+
+    if (!response.ok || !result.success) {
+
+        throw new Error(
+
+            result.error ||
+            "No se pudieron cargar los equipos."
+
+        );
+
+    }
+
+    return result.devices;
+
+}
+
+// ==========================================================
+// ### FIX
+// Eliminar equipo
+// ==========================================================
+
+export async function deleteDevice(deviceId) {
+
+    console.log("=== DELETE DEVICE ===");
+
+    const response =
+        await fetch(
+
+            API + "/device/" + deviceId,
+
+            {
+
+                method: "DELETE"
+
+            }
+
+        );
+
+    console.log("HTTP:", response.status);
+
+    const result =
+        await response.json();
+
+    console.log("RESULTADO:", result);
+
+    if (!response.ok || !result.success) {
+
+        throw new Error(
+
+            result.error ||
+            "No se pudo eliminar el equipo."
+
+        );
+
+    }
+
+    return true;
 
 }
