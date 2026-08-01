@@ -1,115 +1,39 @@
 // ==========================================================
-// LigronLink
-// Gestión de equipos
+// LigronAir
+// session.js
+// Gestión de sesión del navegador
 // ==========================================================
 
-const API =
-    "https://ligronlink.ligronlink-dev.workers.dev/api/v1";
+export function saveUser(user) {
 
-// ==========================================================
-// ### FIX
-// Obtener usuario autenticado
-// ==========================================================
+    localStorage.setItem(
 
-function getCurrentUser() {
+        "ligronUser",
 
-    const raw =
-        localStorage.getItem("ligronUser");
+        JSON.stringify(user)
 
-    if (!raw) {
-
-        throw new Error(
-            "No existe una sesión iniciada."
-        );
-
-    }
-
-    return JSON.parse(raw);
+    );
 
 }
 
-// ==========================================================
-// Obtener equipos
-// ==========================================================
+export function getUser() {
 
-export async function loadDevices() {
+    const data = localStorage.getItem("ligronUser");
 
-    console.log("=== LOAD DEVICES ===");
+    if (!data) {
 
-    const user =
-        getCurrentUser();
-
-    const response =
-        await fetch(
-
-            API +
-            "/devices?email=" +
-            encodeURIComponent(user.email)
-
-        );
-
-    console.log("HTTP:", response.status);
-
-    const result =
-        await response.json();
-
-    console.log("RESULTADO:", result);
-
-    if (!response.ok || !result.success) {
-
-        throw new Error(
-
-            result.error ||
-            "No se pudieron cargar los equipos."
-
-        );
+        return null;
 
     }
 
-    return result.devices;
+    return JSON.parse(data);
 
 }
 
-// ==========================================================
-// ### FIX
-// Eliminar equipo
-// ==========================================================
+export function logout() {
 
-export async function deleteDevice(deviceId) {
+    localStorage.removeItem("ligronUser");
 
-    console.log("=== DELETE DEVICE ===");
-
-    const response =
-        await fetch(
-
-            API + "/device/" + deviceId,
-
-            {
-
-                method: "DELETE"
-
-            }
-
-        );
-
-    console.log("HTTP:", response.status);
-
-    const result =
-        await response.json();
-
-    console.log("RESULTADO:", result);
-
-    if (!response.ok || !result.success) {
-
-        throw new Error(
-
-            result.error ||
-            "No se pudo eliminar el equipo."
-
-        );
-
-    }
-
-    return true;
+    window.location.href = "index.html";
 
 }
