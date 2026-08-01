@@ -4,7 +4,28 @@
 // ==========================================================
 
 const API =
-    "https://ligronlink.ligronlink-dev.workers.dev/api/v1";
+    "https://api.ligronair.tv/api/v1";
+
+// ==========================================================
+// Obtener usuario autenticado
+// ==========================================================
+
+function getCurrentUser() {
+
+    const raw =
+        localStorage.getItem("ligronUser");
+
+    if (!raw) {
+
+        throw new Error(
+            "No existe una sesión iniciada."
+        );
+
+    }
+
+    return JSON.parse(raw);
+
+}
 
 // ==========================================================
 // Obtener equipos
@@ -14,15 +35,22 @@ export async function loadDevices() {
 
     console.log("=== LOAD DEVICES ===");
 
-    const response = await fetch(
+    const user =
+        getCurrentUser();
 
-        API + "/devices"
+    const response =
+        await fetch(
 
-    );
+            API +
+            "/devices?email=" +
+            encodeURIComponent(user.email)
+
+        );
 
     console.log("HTTP:", response.status);
 
-    const result = await response.json();
+    const result =
+        await response.json();
 
     console.log("RESULTADO:", result);
 
@@ -30,7 +58,8 @@ export async function loadDevices() {
 
         throw new Error(
 
-            result.error || "No se pudieron cargar los equipos."
+            result.error ||
+            "No se pudieron cargar los equipos."
 
         );
 
@@ -49,21 +78,30 @@ export async function deleteDevice(deviceId) {
 
     console.log("=== DELETE DEVICE ===");
 
-    const response = await fetch(
+    const user =
+        getCurrentUser();
 
-        API + "/device/" + deviceId,
+    const response =
+        await fetch(
 
-        {
+            API +
+            "/device/" +
+            deviceId +
+            "?email=" +
+            encodeURIComponent(user.email),
 
-            method: "DELETE"
+            {
 
-        }
+                method: "DELETE"
 
-    );
+            }
+
+        );
 
     console.log("HTTP:", response.status);
 
-    const result = await response.json();
+    const result =
+        await response.json();
 
     console.log("RESULTADO:", result);
 
@@ -71,7 +109,8 @@ export async function deleteDevice(deviceId) {
 
         throw new Error(
 
-            result.error || "No se pudo eliminar el equipo."
+            result.error ||
+            "No se pudo eliminar el equipo."
 
         );
 
