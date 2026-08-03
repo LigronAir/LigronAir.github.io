@@ -372,6 +372,32 @@ function renderDevices(devices) {
 
 // ==========================================================
 // ### FIX
+// Actualizar hora del último refresco
+// ==========================================================
+
+function updateLastRefresh() {
+
+    const lastRefresh =
+        document.getElementById("lastRefresh");
+
+    if (!lastRefresh) {
+
+        return;
+
+    }
+
+    const now = new Date();
+
+    const hh = String(now.getHours()).padStart(2, "0");
+    const mm = String(now.getMinutes()).padStart(2, "0");
+    const ss = String(now.getSeconds()).padStart(2, "0");
+
+    lastRefresh.textContent = `${hh}:${mm}:${ss}`;
+
+}
+
+// ==========================================================
+// ### FIX
 // Refrescar panel
 // ==========================================================
 
@@ -388,6 +414,9 @@ async function refreshDashboard() {
         updateCounters(devices);
 
         renderDevices(devices);
+
+        // ### FIX
+        updateLastRefresh();
 
     }
     catch (error) {
@@ -408,6 +437,12 @@ async function refreshDashboard() {
 
 refreshDashboard();
 
+// ### FIX
+setInterval(
+    refreshDashboard,
+    60000
+);
+
 window.addEventListener(
     "devicesChanged",
     () => {
@@ -427,5 +462,28 @@ if (registerButton) {
         openDeviceRegisterDialog();
 
     });
+
+}
+
+// ==========================================================
+// ### FIX
+// Botón de refresco manual
+// ==========================================================
+
+const refreshButton =
+    document.getElementById(
+        "refreshDashboardButton"
+    );
+
+if (refreshButton) {
+
+    refreshButton.addEventListener(
+        "click",
+        () => {
+
+            refreshDashboard();
+
+        }
+    );
 
 }
