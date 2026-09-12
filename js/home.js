@@ -102,6 +102,207 @@ function formatDate(value) {
 
 // ==========================================================
 // ### FIX
+// Renderizar resumen de receptores SRT
+// ==========================================================
+
+function renderSrtSummary(device) {
+
+    const summary =
+        device.srt_receivers;
+
+    if (!summary || Number(summary.total || 0) <= 0) {
+
+        return `
+
+            <div class="srt-summary empty">
+
+                Sin receptores
+
+            </div>
+
+        `;
+
+    }
+
+    const total =
+        Number(summary.total || 0);
+
+    const free =
+        Number(summary.free || 0);
+
+    const busy =
+        Number(summary.busy || 0);
+
+    const reserved =
+        Number(summary.reserved || 0);
+
+    const offline =
+        Number(summary.offline || 0);
+
+    return `
+
+        <div
+            class="srt-summary"
+            title="SRT: ${free} libres · ${busy} ocupados · ${reserved} reservados · ${offline} offline">
+
+            <span class="srt-chip free">
+                L ${free}
+            </span>
+
+            <span class="srt-chip busy">
+                O ${busy}
+            </span>
+
+            <span class="srt-chip reserved">
+                R ${reserved}
+            </span>
+
+            <span class="srt-total">
+                / ${total}
+            </span>
+
+        </div>
+
+    `;
+
+}
+
+// ==========================================================
+// ### FIX
+// Renderizar estado runtime publicado por Pi/Native
+// ==========================================================
+
+function renderRuntimeStatus(device) {
+
+    const runtime =
+        device.runtime_status;
+
+    if (!runtime) {
+
+        return "";
+
+    }
+
+    const state =
+        String(runtime.runtime_state || "OFFLINE").toUpperCase();
+
+    const target =
+        runtime.target_label ||
+        runtime.target_srt_url ||
+        "";
+
+    const source =
+        runtime.source_label || "";
+
+    return `
+
+        <span class="runtime-pill ${escapeHtml(state.toLowerCase())}">
+
+            ${escapeHtml(state)}
+
+        </span>
+
+        <span class="runtime-line">
+
+            ${escapeHtml(source)}
+
+        </span>
+
+        ${
+            target
+                ? `
+                    <span class="runtime-line target">
+                        → ${escapeHtml(target)}
+                    </span>
+                `
+                : ""
+        }
+
+    `;
+
+}
+
+// ==========================================================
+// ### FIX
+// Renderizar detalle desplegable de receptores SRT
+// ==========================================================
+
+function renderReceiverDetails(device) {
+
+    const receivers =
+        Array.isArray(device.srt_receiver_list)
+            ? device.srt_receiver_list
+            : [];
+
+    if (receivers.length === 0) {
+
+        return `
+
+            <div class="receiver-empty">
+
+                Este equipo no ha publicado cajas/receptores SRT.
+
+            </div>
+
+        `;
+
+    }
+
+    return `
+
+        <div class="receiver-grid">
+
+            ${receivers.map(receiver => {
+
+                const state =
+                    String(receiver.state || "OFFLINE").toUpperCase();
+
+                const label =
+                    state === "FREE"
+                        ? "Esperando"
+                        : state === "BUSY"
+                            ? "En uso"
+                            : state === "RESERVED"
+                                ? "Reservado"
+                                : "Apagado";
+
+                return `
+
+                    <div class="receiver-card ${escapeHtml(state.toLowerCase())}">
+
+                        <div class="receiver-card-head">
+
+                            <span class="receiver-name">
+                                ${escapeHtml(receiver.name || ("MOCHILA " + receiver.source_id))}
+                            </span>
+
+                            <span class="receiver-state">
+                                ${escapeHtml(label)}
+                            </span>
+
+                        </div>
+
+                        <div class="receiver-card-meta">
+
+                            Puerto ${escapeHtml(receiver.port || "—")}
+                            · ${escapeHtml(receiver.mode || "listener")}
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }).join("")}
+
+        </div>
+
+    `;
+
+}
+
+// ==========================================================
+// ### FIX
 // Actualizar contadores
 // ==========================================================
 
@@ -222,7 +423,7 @@ function renderDevices(devices) {
             <tr class="devices-empty-row">
 
                 <td
-                    colspan="6"
+                    colspan="7"
                     class="devices-empty-cell">
 
                     <div class="empty-state">
@@ -257,6 +458,9 @@ function renderDevices(devices) {
 
         const row =
             document.createElement("tr");
+
+        const detailRow =
+            document.createElement("tr"); // ### FIX
 
         const status =
             String(device.estado || "OFFLINE")
@@ -299,11 +503,23 @@ function renderDevices(devices) {
 
                 </span>
 
+                <span class="device-runtime">
+
+                    ${renderRuntimeStatus(device)}
+
+                </span>
+
             </td>
 
             <td class="devices-cell type-cell">
 
                 ${escapeHtml(friendlyType)}
+
+            </td>
+
+            <td class="devices-cell srt-cell">
+
+                ${renderSrtSummary(device)}
 
             </td>
 
@@ -323,6 +539,14 @@ function renderDevices(devices) {
             <td class="devices-cell actions-cell">
 
                 <div class="devices-actions">
+
+                    <button
+                        type="button"
+                        class="ligron-button receivers-button">
+
+                        Cajas
+
+                    </button>
 
                     <button
                         type="button"
@@ -352,6 +576,9 @@ function renderDevices(devices) {
         const deleteButton =
             row.querySelector(".delete-button");
 
+        const receiversButton =
+            row.querySelector(".receivers-button"); // ### FIX
+
         editButton.addEventListener("click", () => {
 
             editDevice(device);
@@ -365,6 +592,25 @@ function renderDevices(devices) {
         });
 
         deviceList.appendChild(row);
+
+        detailRow.className = "receiver-detail-row hidden"; // ### FIX
+        detailRow.innerHTML = `
+
+            <td colspan="7" class="receiver-detail-cell">
+
+                ${renderReceiverDetails(device)}
+
+            </td>
+
+        `;
+
+        receiversButton.addEventListener("click", () => {
+
+            detailRow.classList.toggle("hidden");
+
+        });
+
+        deviceList.appendChild(detailRow);
 
     });
 
@@ -440,7 +686,7 @@ refreshDashboard();
 // ### FIX
 setInterval(
     refreshDashboard,
-    60000
+    20000
 );
 
 window.addEventListener(

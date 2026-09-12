@@ -298,6 +298,11 @@ body::after {
     width: 180px;
 }
 
+.devices-table-element col.col-srt {
+    /* ### FIX */
+    width: 210px;
+}
+
 .devices-table-element col.col-uuid {
     width: auto;
 }
@@ -405,9 +410,195 @@ body::after {
     line-height: 1.2;
 }
 
+.device-runtime {
+    /* ### FIX */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.runtime-pill {
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.runtime-pill.emitting {
+    color: var(--color-success);
+    border-color: rgba(76, 255, 142, 0.30);
+    background: rgba(76, 255, 142, 0.08);
+}
+
+.runtime-pill.connecting {
+    color: var(--color-warning);
+    border-color: rgba(255, 212, 96, 0.30);
+    background: rgba(255, 212, 96, 0.08);
+}
+
+.runtime-pill.monitor {
+    color: #59c7ff;
+    border-color: rgba(89, 199, 255, 0.30);
+    background: rgba(89, 199, 255, 0.08);
+}
+
+.runtime-line {
+    color: var(--color-text-muted);
+    font-size: 0.72rem;
+    line-height: 1.25;
+}
+
+.runtime-line.target {
+    color: var(--color-warning);
+}
+
 .devices-row .devices-cell.type-cell,
 .devices-row .devices-cell.registered-cell {
     color: var(--color-text-secondary);
+}
+
+.srt-summary {
+    /* ### FIX */
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    color: var(--color-text-muted);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.srt-summary.empty {
+    color: var(--color-text-muted);
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.srt-chip {
+    /* ### FIX */
+    min-width: 38px;
+    padding: 5px 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.035);
+    text-align: center;
+}
+
+.srt-chip.free {
+    color: var(--color-success);
+    border-color: rgba(76, 255, 142, 0.28);
+    background: rgba(76, 255, 142, 0.08);
+}
+
+.srt-chip.busy {
+    color: var(--color-warning);
+    border-color: rgba(255, 212, 96, 0.28);
+    background: rgba(255, 212, 96, 0.08);
+}
+
+.srt-chip.reserved {
+    color: #59c7ff;
+    border-color: rgba(89, 199, 255, 0.30);
+    background: rgba(89, 199, 255, 0.08);
+}
+
+.srt-total {
+    color: var(--color-text-muted);
+}
+
+.receiver-detail-row.hidden {
+    /* ### FIX */
+    display: none;
+}
+
+.receiver-detail-cell {
+    /* ### FIX */
+    padding: 12px 20px 20px !important;
+    background: rgba(0, 0, 0, 0.22);
+}
+
+.receiver-grid {
+    /* ### FIX */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 10px;
+}
+
+.receiver-card {
+    /* ### FIX */
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.receiver-card.free {
+    border-color: rgba(76, 255, 142, 0.22);
+}
+
+.receiver-card.busy {
+    border-color: rgba(255, 212, 96, 0.24);
+}
+
+.receiver-card.reserved {
+    border-color: rgba(89, 199, 255, 0.26);
+}
+
+.receiver-card.offline {
+    border-color: rgba(255, 109, 109, 0.20);
+    opacity: 0.72;
+}
+
+.receiver-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.receiver-name {
+    color: var(--color-text);
+    font-weight: 800;
+    font-size: 0.82rem;
+}
+
+.receiver-state {
+    color: var(--color-text-muted);
+    font-size: 0.68rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.receiver-card.free .receiver-state {
+    color: var(--color-success);
+}
+
+.receiver-card.busy .receiver-state {
+    color: var(--color-warning);
+}
+
+.receiver-card.reserved .receiver-state {
+    color: #59c7ff;
+}
+
+.receiver-card.offline .receiver-state {
+    color: var(--color-danger);
+}
+
+.receiver-card-meta,
+.receiver-empty {
+    margin-top: 7px;
+    color: var(--color-text-muted);
+    font-size: 0.72rem;
 }
 
 .devices-row .devices-cell.uuid-cell {
@@ -564,6 +755,11 @@ footer {
 
     .devices-table-element col.col-type {
         width: 160px;
+    }
+
+    .devices-table-element col.col-srt {
+        /* ### FIX */
+        width: 190px;
     }
 
     .devices-table-element col.col-registered {
