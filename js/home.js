@@ -473,7 +473,7 @@ function renderDevices(devices) {
 
         row.innerHTML = `
 
-            <td class="devices-cell status-cell">
+            <td class="devices-cell status-cell" data-label="Estado">
 
                 <div class="devices-status ${status.toLowerCase()}">
 
@@ -489,7 +489,7 @@ function renderDevices(devices) {
 
             </td>
 
-            <td class="devices-cell name-cell">
+            <td class="devices-cell name-cell" data-label="Nombre / Alias">
 
                 <span class="device-main-name">
 
@@ -511,32 +511,33 @@ function renderDevices(devices) {
 
             </td>
 
-            <td class="devices-cell type-cell">
+            <td class="devices-cell type-cell" data-label="Tipo">
 
                 ${escapeHtml(friendlyType)}
 
             </td>
 
-            <td class="devices-cell srt-cell">
+            <td class="devices-cell srt-cell" data-label="SRT">
 
                 ${renderSrtSummary(device)}
 
             </td>
 
             <td class="devices-cell uuid-cell"
+                data-label="UUID"
                 title="${escapeHtml(device.uuid || "—")}">
 
                 ${escapeHtml(device.uuid || "—")}
 
             </td>
 
-            <td class="devices-cell registered-cell">
+            <td class="devices-cell registered-cell" data-label="Registrado">
 
                 ${escapeHtml(formatDate(device.fecha_creacion))}
 
             </td>
 
-            <td class="devices-cell actions-cell">
+            <td class="devices-cell actions-cell" data-label="Acciones">
 
                 <div class="devices-actions">
 
