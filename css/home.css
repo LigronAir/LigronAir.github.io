@@ -287,20 +287,20 @@ body::after {
 }
 
 .devices-table-element col.col-status {
-    width: 110px;
+    width: 100px;
 }
 
 .devices-table-element col.col-name {
-    width: 260px;
+    width: 220px;
 }
 
 .devices-table-element col.col-type {
-    width: 180px;
+    width: 145px;
 }
 
 .devices-table-element col.col-srt {
     /* ### FIX */
-    width: 210px;
+    width: 180px;
 }
 
 .devices-table-element col.col-uuid {
@@ -308,11 +308,11 @@ body::after {
 }
 
 .devices-table-element col.col-registered {
-    width: 140px;
+    width: 125px;
 }
 
 .devices-table-element col.col-actions {
-    width: 220px;
+    width: 320px;
 }
 
 .devices-table-element thead th {
@@ -608,15 +608,16 @@ body::after {
 }
 
 .devices-actions {
-    display: flex;
-    justify-content: flex-end;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
-    white-space: nowrap;
+    width: 100%;
 }
 
 .devices-actions .ligron-button {
-    min-width: 104px;
-    padding-inline: 14px;
+    min-width: 0;
+    width: 100%;
+    padding-inline: 8px;
 }
 
 .devices-actions .delete-button {
