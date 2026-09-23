@@ -234,10 +234,21 @@ function renderReceiverDetails(device) {
             ? device.srt_receiver_list
             : [];
 
+    const network = device.network_status || {};
+    const networkDetails = `
+        <div class="receiver-network">
+            <strong>Red publicada por Native</strong>
+            <span>IP local: ${escapeHtml(network.ipv4_address || "—")}</span>
+            <span>IP exterior: ${escapeHtml(device.public_ip || "—")}</span>
+            <span>Tailscale: ${network.tailscale_available ? escapeHtml(network.tailscale_ipv4_address || "ACTIVO") : "NO ACTIVO"}</span>
+            <span>Tailnet: ${escapeHtml(network.tailscale_tailnet || "—")}</span>
+        </div>`;
+
     if (receivers.length === 0) {
 
         return `
 
+            ${networkDetails}
             <div class="receiver-empty">
 
                 Este equipo no ha publicado cajas/receptores SRT.
@@ -250,6 +261,7 @@ function renderReceiverDetails(device) {
 
     return `
 
+        ${networkDetails}
         <div class="receiver-grid">
 
             ${receivers.map(receiver => {
@@ -286,6 +298,7 @@ function renderReceiverDetails(device) {
 
                             Puerto ${escapeHtml(receiver.port || "—")}
                             · ${escapeHtml(receiver.mode || "listener")}
+                            · Endpoint: ${escapeHtml(receiver.host || "—")}
 
                         </div>
 

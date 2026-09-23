@@ -533,6 +533,24 @@ body::after {
     gap: 10px;
 }
 
+.receiver-network {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 8px 14px;
+    margin: 0 0 12px;
+    padding: 12px;
+    border: 1px solid #2b4e66;
+    border-radius: 10px;
+    color: #b9d7e8;
+    background: #0b1924;
+    font-size: 0.85rem;
+}
+
+.receiver-network strong {
+    grid-column: 1 / -1;
+    color: #ffffff;
+}
+
 .receiver-card {
     /* ### FIX */
     padding: 10px 12px;
