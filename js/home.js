@@ -223,6 +223,114 @@ function renderRuntimeStatus(device) {
 }
 
 // ==========================================================
+// LigronTail: Link explica la ruta sin exponer su mecánica.
+// ==========================================================
+
+function isPi(device) {
+    return String(device.tipo || "").trim().toLowerCase()
+        .includes("ligronpi");
+}
+
+function isNative(device) {
+    return String(device.tipo || "").trim().toLowerCase()
+        .includes("ligronair");
+}
+
+function samePrivateLan(left, right) {
+    const parse = value => String(value || "").split(".").map(Number);
+    const a = parse(left);
+    const b = parse(right);
+    const valid = value => value.length === 4 && value.every(part => Number.isInteger(part) && part >= 0 && part <= 255);
+    const privateV4 = value => value[0] === 10 || (value[0] === 172 && value[1] >= 16 && value[1] <= 31) || (value[0] === 192 && value[1] === 168);
+    return valid(a) && valid(b) && privateV4(a) && privateV4(b)
+        && a.slice(0, 3).join(".") === b.slice(0, 3).join(".");
+}
+
+function ligronTailState(device) {
+    const network = device.network_status || {};
+    if (network.tailscale_available && network.tailscale_ipv4_address && network.tailscale_tailnet) {
+        return {
+            label: "ACTIVO",
+            tone: "ready",
+            detail: `${network.tailscale_ipv4_address} · ${network.tailscale_tailnet}`
+        };
+    }
+    const state = String(network.tailscale_state || "NO_REPORT").toUpperCase();
+    const labels = {
+        NOT_INSTALLED: "NO INSTALADO",
+        NEEDSLOGIN: "SIN VINCULAR",
+        NEEDS_LOGIN: "SIN VINCULAR",
+        STOPPED: "SERVICIO DETENIDO",
+        UNRESPONSIVE: "SIN RESPUESTA",
+        NO_ADDRESS: "SIN DIRECCIÓN",
+        NO_REPORT: "SIN INFORME"
+    };
+    return { label: labels[state] || state, tone: "not-ready", detail: "LigronTail" };
+}
+
+function routePlan(pi, native) {
+    const piNetwork = pi.network_status || {};
+    const nativeNetwork = native.network_status || {};
+    const piOnline = String(pi.estado || "").toUpperCase() === "ONLINE";
+    const nativeOnline = String(native.estado || "").toUpperCase() === "ONLINE";
+    if (!piOnline || !nativeOnline) {
+        return { label: "PENDIENTE", tone: "not-ready", detail: "Los dos equipos deben estar online en Link." };
+    }
+    if (piNetwork.tailscale_available && nativeNetwork.tailscale_available
+        && piNetwork.tailscale_tailnet
+        && String(piNetwork.tailscale_tailnet).toLowerCase() === String(nativeNetwork.tailscale_tailnet || "").toLowerCase()) {
+        return {
+            label: "LIGRONTAIL DIRECTO",
+            tone: "ready",
+            detail: `${piNetwork.tailscale_ipv4_address} → ${nativeNetwork.tailscale_ipv4_address}`
+        };
+    }
+    if (samePrivateLan(piNetwork.ipv4_address, nativeNetwork.ipv4_address)) {
+        return { label: "LAN DIRECTA", tone: "ready", detail: `${piNetwork.ipv4_address} → ${nativeNetwork.ipv4_address}` };
+    }
+    if (native.public_ip) {
+        return { label: "NATIVE PÚBLICO", tone: "fallback", detail: `Endpoint publicado: ${native.public_ip}` };
+    }
+    return { label: "SIN RUTA", tone: "not-ready", detail: "Native aún no ha publicado una ruta utilizable." };
+}
+
+function renderLigronTailMatrix(devices) {
+    const target = document.getElementById("ligronTailMatrix");
+    if (!target) return;
+    const pis = devices.filter(isPi);
+    const natives = devices.filter(isNative);
+    if (!pis.length && !natives.length) {
+        target.innerHTML = '<div class="ligron-tail-empty">Registra Pi y Native para que Link pueda sincronizar su red.</div>';
+        return;
+    }
+    target.innerHTML = pis.map(pi => {
+        const piTail = ligronTailState(pi);
+        const targets = natives.map(native => {
+            const route = routePlan(pi, native);
+            const nativeTail = ligronTailState(native);
+            return `
+                <div class="ligron-tail-route ${route.tone}">
+                    <div class="ligron-tail-route-head">
+                        <span>${escapeHtml(pi.alias || "LigronPi")} → ${escapeHtml(native.alias || "LigronAir Native")}</span>
+                        <strong>${escapeHtml(route.label)}</strong>
+                    </div>
+                    <span>${escapeHtml(route.detail)}</span>
+                    <small>Pi: ${escapeHtml(piTail.label)} · Native: ${escapeHtml(nativeTail.label)}</small>
+                </div>`;
+        }).join("") || '<div class="ligron-tail-empty">No hay ningún Native registrado en esta cuenta.</div>';
+        return `
+            <article class="ligron-tail-pi">
+                <div class="ligron-tail-pi-head">
+                    <div><strong>${escapeHtml(pi.alias || "LigronPi")}</strong><span>${escapeHtml(pi.uuid || "—")}</span></div>
+                    <span class="ligron-tail-badge ${piTail.tone}">${escapeHtml(piTail.label)}</span>
+                </div>
+                <div class="ligron-tail-device-data">${escapeHtml(piTail.detail)} · LAN ${escapeHtml((pi.network_status || {}).ipv4_address || "—")} · pública ${escapeHtml(pi.public_ip || "—")}</div>
+                <div class="ligron-tail-routes">${targets}</div>
+            </article>`;
+    }).join("") || '<div class="ligron-tail-empty">No hay LigronPi registrado: Native está listo, pero no tiene emisor asociado.</div>';
+}
+
+// ==========================================================
 // ### FIX
 // Renderizar detalle desplegable de receptores SRT
 // ==========================================================
@@ -235,13 +343,17 @@ function renderReceiverDetails(device) {
             : [];
 
     const network = device.network_status || {};
+    const tail = ligronTailState(device);
     const networkDetails = `
         <div class="receiver-network">
-            <strong>Red publicada por Native</strong>
+            <strong>Red sincronizada con LigronLink</strong>
+            <span>Sincronización: ${escapeHtml(network.sync_state || "NO REPORTADA")}</span>
             <span>IP local: ${escapeHtml(network.ipv4_address || "—")}</span>
             <span>IP exterior: ${escapeHtml(device.public_ip || "—")}</span>
-            <span>Tailscale: ${network.tailscale_available ? escapeHtml(network.tailscale_ipv4_address || "ACTIVO") : "NO ACTIVO"}</span>
+            <span>IPv6: ${escapeHtml(network.ipv6_address || "—")}</span>
+            <span>LigronTail: ${escapeHtml(tail.label)} · ${escapeHtml(network.tailscale_ipv4_address || "—")}</span>
             <span>Tailnet: ${escapeHtml(network.tailscale_tailnet || "—")}</span>
+            <span>Última presencia: ${escapeHtml(network.last_seen_at || "—")}</span>
         </div>`;
 
     if (receivers.length === 0) {
@@ -558,7 +670,7 @@ function renderDevices(devices) {
                         type="button"
                         class="ligron-button receivers-button">
 
-                        Cajas
+                        Red y cajas
 
                     </button>
 
@@ -672,6 +784,8 @@ async function refreshDashboard() {
         console.log("DEVICES:", devices);
 
         updateCounters(devices);
+
+        renderLigronTailMatrix(devices);
 
         renderDevices(devices);
 

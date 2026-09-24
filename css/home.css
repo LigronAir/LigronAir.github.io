@@ -551,6 +551,126 @@ body::after {
     color: #ffffff;
 }
 
+/* LigronTail: mapa de control visible, no configuración técnica. */
+.ligron-tail-panel {
+    border-color: rgba(89, 199, 255, 0.30);
+}
+
+.ligron-tail-intro {
+    margin: -8px 0 18px;
+    color: var(--color-text-secondary);
+    line-height: 1.55;
+}
+
+.ligron-tail-matrix {
+    display: grid;
+    gap: 12px;
+}
+
+.ligron-tail-pi {
+    padding: 14px;
+    border: 1px solid rgba(89, 199, 255, 0.24);
+    border-radius: 14px;
+    background: rgba(8, 25, 39, 0.54);
+}
+
+.ligron-tail-pi-head,
+.ligron-tail-route-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.ligron-tail-pi-head strong,
+.ligron-tail-route-head span {
+    color: var(--color-text);
+    font-weight: 800;
+}
+
+.ligron-tail-pi-head span:not(.ligron-tail-badge) {
+    display: block;
+    max-width: 42vw;
+    overflow: hidden;
+    color: var(--color-text-muted);
+    font-size: 0.73rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ligron-tail-badge {
+    flex: 0 0 auto;
+    padding: 5px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+    color: var(--color-text-muted);
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+}
+
+.ligron-tail-badge.ready,
+.ligron-tail-route.ready strong {
+    color: var(--color-success);
+}
+
+.ligron-tail-badge.not-ready,
+.ligron-tail-route.not-ready strong {
+    color: var(--color-danger);
+}
+
+.ligron-tail-route.fallback strong {
+    color: var(--color-warning);
+}
+
+.ligron-tail-device-data {
+    margin-top: 8px;
+    color: #a9c8db;
+    font-size: 0.79rem;
+}
+
+.ligron-tail-routes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.ligron-tail-route {
+    display: grid;
+    gap: 5px;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.025);
+    color: var(--color-text-secondary);
+    font-size: 0.8rem;
+}
+
+.ligron-tail-route.ready {
+    border-color: rgba(76, 255, 142, 0.26);
+}
+
+.ligron-tail-route.not-ready {
+    border-color: rgba(242, 84, 91, 0.26);
+}
+
+.ligron-tail-route.fallback {
+    border-color: rgba(255, 212, 96, 0.28);
+}
+
+.ligron-tail-route small {
+    color: var(--color-text-muted);
+    font-size: 0.72rem;
+}
+
+.ligron-tail-empty {
+    padding: 14px;
+    border: 1px dashed rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    color: var(--color-text-muted);
+}
+
 .receiver-card {
     /* ### FIX */
     padding: 10px 12px;
