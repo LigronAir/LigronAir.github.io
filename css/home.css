@@ -419,6 +419,31 @@ body::after {
     margin-top: 8px;
 }
 
+.device-ligron-tail {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 7px;
+    padding: 4px 7px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    color: var(--color-text-muted);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+}
+
+.device-ligron-tail.ready {
+    color: var(--color-success);
+    border-color: rgba(76, 255, 142, 0.30);
+    background: rgba(76, 255, 142, 0.07);
+}
+
+.device-ligron-tail.not-ready {
+    color: var(--color-danger);
+    border-color: rgba(242, 84, 91, 0.28);
+    background: rgba(242, 84, 91, 0.06);
+}
+
 .runtime-pill {
     padding: 4px 8px;
     border-radius: 999px;
@@ -549,6 +574,37 @@ body::after {
 .receiver-network strong {
     grid-column: 1 / -1;
     color: #ffffff;
+}
+
+.device-route-list {
+    display: grid;
+    grid-column: 1 / -1;
+    gap: 6px;
+    margin-top: 4px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(185, 215, 232, 0.16);
+}
+
+.device-route-list strong {
+    color: #ffffff;
+}
+
+.device-route {
+    color: #b9d7e8;
+    font-size: 0.8rem;
+}
+
+.device-route.ready strong {
+    color: var(--color-success);
+}
+
+.device-route.fallback strong {
+    color: var(--color-warning);
+}
+
+.device-route.not-ready,
+.device-route.not-ready strong {
+    color: var(--color-danger);
 }
 
 /* LigronTail: mapa de control visible, no configuración técnica. */
