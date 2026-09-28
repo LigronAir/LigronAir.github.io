@@ -262,6 +262,11 @@ function ligronTailState(device) {
         ELEVATION_REQUESTED: { label: "VINCULANDO", detail: "instalando red privada" },
         ELEVATION_REJECTED: { label: "PERMISO REQUERIDO", detail: "Windows rechazó la instalación de red" },
         LIGRONTAIL_NOT_CONFIGURED: { label: "RED NO CONFIGURADA", detail: "Link aún no tiene su identidad de red" },
+        ACCOUNT_VALIDATION_FAILED: { label: "REVALIDACIÓN REQUERIDA", detail: "vuelve a iniciar sesión en Native" },
+        DEVICE_OWNERSHIP_FAILED: { label: "EQUIPO NO VINCULADO", detail: "este Native no pertenece a la cuenta activa" },
+        BOOTSTRAP_INPUT_MISSING: { label: "SESIÓN INCOMPLETA", detail: "Native debe iniciar sesión de nuevo" },
+        LIGRONTAIL_NETWORK_FAILED: { label: "LINK INALCANZABLE", detail: "Native no pudo llegar a Link" },
+        LIGRONTAIL_PROVIDER_FAILED: { label: "RED PRIVADA NO DISPONIBLE", detail: "Link no pudo obtener la identidad de red" },
         REQUEST_FAILED: { label: "VINCULACIÓN FALLIDA", detail: "Link no pudo preparar la red privada" },
         INSTALLER_MISSING: { label: "INSTALADOR AUSENTE", detail: "Native necesita su componente LigronTail" }
     };
