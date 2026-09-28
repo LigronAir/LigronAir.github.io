@@ -249,17 +249,30 @@ function samePrivateLan(left, right) {
 function ligronTailState(device) {
     const network = device.network_status || {};
     if (network.tailscale_available && network.tailscale_ipv4_address && network.tailscale_tailnet) {
+        const evidence = String(network.tailscale_evidence || "").toUpperCase();
         return {
             label: "ACTIVO",
             tone: "ready",
-            detail: `${network.tailscale_ipv4_address} · ${network.tailscale_tailnet}`
+            detail: `${network.tailscale_ipv4_address} · ${network.tailscale_tailnet}${evidence === "ADAPTER_AND_POLICY" ? " · adaptador/política" : ""}`
         };
+    }
+    const provisioning = String(network.tailscale_provisioning_state || "").toUpperCase();
+    const provisioningState = {
+        REQUESTING: { label: "VINCULANDO", detail: "solicitando identidad de red" },
+        ELEVATION_REQUESTED: { label: "VINCULANDO", detail: "instalando red privada" },
+        ELEVATION_REJECTED: { label: "PERMISO REQUERIDO", detail: "Windows rechazó la instalación de red" },
+        LIGRONTAIL_NOT_CONFIGURED: { label: "RED NO CONFIGURADA", detail: "Link aún no tiene su identidad de red" },
+        REQUEST_FAILED: { label: "VINCULACIÓN FALLIDA", detail: "Link no pudo preparar la red privada" },
+        INSTALLER_MISSING: { label: "INSTALADOR AUSENTE", detail: "Native necesita su componente LigronTail" }
+    };
+    if (provisioningState[provisioning]) {
+        return { ...provisioningState[provisioning], tone: "not-ready" };
     }
     const state = String(network.tailscale_state || "NO_REPORT").toUpperCase();
     const labels = {
         NOT_INSTALLED: "NO INSTALADO",
-        NEEDSLOGIN: "SIN VINCULAR",
-        NEEDS_LOGIN: "SIN VINCULAR",
+        NEEDSLOGIN: "RED PRIVADA PENDIENTE",
+        NEEDS_LOGIN: "RED PRIVADA PENDIENTE",
         ACCESS_DENIED: "PENDIENTE DE PROVISIÓN",
         TAILNET_UNKNOWN: "TAILNET SIN IDENTIFICAR",
         STOPPED: "SERVICIO DETENIDO",
@@ -267,7 +280,20 @@ function ligronTailState(device) {
         NO_ADDRESS: "SIN DIRECCIÓN",
         NO_REPORT: "SIN INFORME"
     };
-    return { label: labels[state] || state, tone: "not-ready", detail: "LigronTail" };
+    const detail = {
+        ACCESS_DENIED: "servicio Windows protegido; falta provisión",
+        TAILNET_UNKNOWN: network.tailscale_ipv4_address
+            ? `${network.tailscale_ipv4_address} · falta identificar tailnet`
+            : "adaptador sin tailnet identificable",
+        NEEDSLOGIN: "autorización inicial pendiente",
+        NEEDS_LOGIN: "autorización inicial pendiente",
+        NOT_INSTALLED: "cliente no instalado",
+        STOPPED: "servicio detenido",
+        UNRESPONSIVE: "servicio sin respuesta",
+        NO_ADDRESS: "sin dirección de overlay",
+        NO_REPORT: "aún sin heartbeat de Native"
+    };
+    return { label: labels[state] || state, tone: "not-ready", detail: detail[state] || "LigronTail" };
 }
 
 function routePlan(pi, native) {
