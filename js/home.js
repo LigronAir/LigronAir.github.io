@@ -257,6 +257,7 @@ function ligronTailState(device) {
         };
     }
     const provisioning = String(network.tailscale_provisioning_state || "").toUpperCase();
+    const provisioningError = String(network.tailscale_provisioning_error || "").trim();
     const provisioningState = {
         REQUESTING: { label: "VINCULANDO", detail: "solicitando identidad de red" },
         ELEVATION_REQUESTED: { label: "VINCULANDO", detail: "instalando red privada" },
@@ -275,7 +276,13 @@ function ligronTailState(device) {
         INSTALLER_MISSING: { label: "INSTALADOR AUSENTE", detail: "Native necesita su componente LigronTail" }
     };
     if (provisioningState[provisioning]) {
-        return { ...provisioningState[provisioning], tone: "not-ready" };
+        return {
+            ...provisioningState[provisioning],
+            detail: provisioning === "INSTALL_FAILED" && provisioningError
+                ? provisioningError
+                : provisioningState[provisioning].detail,
+            tone: "not-ready"
+        };
     }
     const state = String(network.tailscale_state || "NO_REPORT").toUpperCase();
     const labels = {
