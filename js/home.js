@@ -236,15 +236,7 @@ function isNative(device) {
         .includes("ligronair");
 }
 
-function samePrivateLan(left, right) {
-    const parse = value => String(value || "").split(".").map(Number);
-    const a = parse(left);
-    const b = parse(right);
-    const valid = value => value.length === 4 && value.every(part => Number.isInteger(part) && part >= 0 && part <= 255);
-    const privateV4 = value => value[0] === 10 || (value[0] === 172 && value[1] >= 16 && value[1] <= 31) || (value[0] === 192 && value[1] === 168);
-    return valid(a) && valid(b) && privateV4(a) && privateV4(b)
-        && a.slice(0, 3).join(".") === b.slice(0, 3).join(".");
-}
+let routePlansByPair = new Map();
 
 function ligronTailState(device) {
     const network = device.network_status || {};
@@ -313,33 +305,11 @@ function ligronTailState(device) {
 }
 
 function routePlan(pi, native) {
-    const piNetwork = pi.network_status || {};
-    const nativeNetwork = native.network_status || {};
-    const piOnline = String(pi.estado || "").toUpperCase() === "ONLINE";
-    const nativeOnline = String(native.estado || "").toUpperCase() === "ONLINE";
-    if (!piOnline || !nativeOnline) {
-        return { label: "PENDIENTE", tone: "not-ready", detail: "Los dos equipos deben estar online en Link." };
-    }
-    if (piNetwork.tailscale_available && nativeNetwork.tailscale_available
-        && piNetwork.tailscale_tailnet
-        && String(piNetwork.tailscale_tailnet).toLowerCase() === String(nativeNetwork.tailscale_tailnet || "").toLowerCase()) {
-        return {
-            label: "LIGRONTAIL DIRECTO",
-            tone: "ready",
-            detail: `${piNetwork.tailscale_ipv4_address} → ${nativeNetwork.tailscale_ipv4_address}`
-        };
-    }
-    if (samePrivateLan(piNetwork.ipv4_address, nativeNetwork.ipv4_address)) {
-        return { label: "LAN DIRECTA", tone: "ready", detail: `${piNetwork.ipv4_address} → ${nativeNetwork.ipv4_address}` };
-    }
-    if (native.public_ip) {
-        return {
-            label: "IP PÚBLICA NO VALIDADA",
-            tone: "not-ready",
-            detail: `${native.public_ip}; Link no la usará sin una ruta comprobada.`
-        };
-    }
-    return { label: "SIN RUTA", tone: "not-ready", detail: "Activa LigronTail en ambos equipos o conéctalos a la misma LAN." };
+    return routePlansByPair.get(`${pi.uuid}:${native.uuid}`) || {
+        selected_label: "Pendiente de informe",
+        selected_reason: "Link aún no ha publicado el plan de esta pareja de equipos.",
+        candidates: []
+    };
 }
 
 function renderLigronTailDeviceLine(device) {
@@ -374,7 +344,19 @@ function renderReceiverDetails(device, devices) {
             const pi = isPi(device) ? device : peer;
             const native = isNative(device) ? device : peer;
             const route = routePlan(pi, native);
-            return `<span class="device-route ${route.tone}">${escapeHtml(peer.alias || getDeviceTypeName(peer.tipo))}: <strong>${escapeHtml(route.label)}</strong> · ${escapeHtml(route.detail)}</span>`;
+            const selected = route.selected_transport ? "ready" : "not-ready";
+            const candidates = Array.isArray(route.candidates) && route.candidates.length
+                ? route.candidates.map(candidate => `<li class="route-candidate ${candidate.state === "READY" ? "ready" : "not-ready"}">
+                    <strong>${escapeHtml(candidate.label)}</strong>: ${escapeHtml(candidate.reason)}
+                </li>`).join("")
+                : "<li class=\"route-candidate not-ready\">Aún no hay capacidades de red publicadas.</li>";
+            return `<div class="device-route ${selected}">
+                <span>${escapeHtml(peer.alias || getDeviceTypeName(peer.tipo))}: <strong>${escapeHtml(route.selected_label)}</strong> · ${escapeHtml(route.selected_reason)}</span>
+                <details class="route-explanation">
+                    <summary>Ver rutas y criterios</summary>
+                    <ul>${candidates}</ul>
+                </details>
+            </div>`;
         }).join("")
         : '<span class="device-route not-ready">No hay equipo complementario registrado en esta cuenta.</span>';
     const networkDetails = `
@@ -387,7 +369,11 @@ function renderReceiverDetails(device, devices) {
             <span>LigronTail: ${escapeHtml(tail.label)} · ${escapeHtml(network.tailscale_ipv4_address || "—")}</span>
             <span>Tailnet: ${escapeHtml(network.tailscale_tailnet || "—")}</span>
             <span>Última presencia: ${escapeHtml(network.last_seen_at || "—")}</span>
-            <div class="device-route-list"><strong>Rutas con equipos vinculados</strong>${routes}</div>
+            <div class="device-route-list">
+                <strong>Gestor de rutas con equipos vinculados</strong>
+                <span class="route-guidance">LigronLink selecciona automáticamente la primera ruta comprobada. Esta vista informa: no abre puertos, no modifica la VPN y no inicia emisiones.</span>
+                ${routes}
+            </div>
         </div>`;
 
     if (receivers.length === 0) {
@@ -546,19 +532,6 @@ async function removeDevice(device) {
 
 // ==========================================================
 // ### FIX
-// Editar equipo
-// ==========================================================
-
-function editDevice(device) {
-
-    alert(
-        `Editar equipo pendiente: ${device.alias}`
-    );
-
-}
-
-// ==========================================================
-// ### FIX
 // Renderizar listado de equipos
 // ==========================================================
 
@@ -704,7 +677,9 @@ function renderDevices(devices) {
 
                     <button
                         type="button"
-                        class="ligron-button receivers-button">
+                        class="ligron-button receivers-button"
+                        title="Muestra el plan de rutas y el estado de las cajas; no modifica la red."
+                        aria-expanded="false">
 
                         ${isNative(device) ? "Red y cajas" : "Red"}
 
@@ -712,15 +687,8 @@ function renderDevices(devices) {
 
                     <button
                         type="button"
-                        class="ligron-button edit-button">
-
-                        Editar
-
-                    </button>
-
-                    <button
-                        type="button"
-                        class="ligron-button delete-button">
+                        class="ligron-button delete-button"
+                        title="Elimina este equipo de LigronLink después de pedir confirmación.">
 
                         Eliminar
 
@@ -732,20 +700,11 @@ function renderDevices(devices) {
 
         `;
 
-        const editButton =
-            row.querySelector(".edit-button");
-
         const deleteButton =
             row.querySelector(".delete-button");
 
         const receiversButton =
             row.querySelector(".receivers-button"); // ### FIX
-
-        editButton.addEventListener("click", () => {
-
-            editDevice(device);
-
-        });
 
         deleteButton.addEventListener("click", () => {
 
@@ -769,6 +728,11 @@ function renderDevices(devices) {
         receiversButton.addEventListener("click", () => {
 
             detailRow.classList.toggle("hidden");
+            const expanded = !detailRow.classList.contains("hidden");
+            receiversButton.setAttribute("aria-expanded", String(expanded));
+            receiversButton.textContent = expanded
+                ? "Ocultar red y cajas"
+                : (isNative(device) ? "Red y cajas" : "Red");
 
         });
 
@@ -815,7 +779,12 @@ async function refreshDashboard() {
 
     try {
 
-        const devices = await loadDevices();
+        const { devices, routePlans } = await loadDevices();
+
+        routePlansByPair = new Map(routePlans.map((plan) => [
+            `${plan.pi_uuid}:${plan.native_uuid}`,
+            plan
+        ]));
 
         console.log("DEVICES:", devices);
 

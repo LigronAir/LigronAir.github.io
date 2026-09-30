@@ -590,6 +590,8 @@ body::after {
 }
 
 .device-route {
+    display: grid;
+    gap: 4px;
     color: #b9d7e8;
     font-size: 0.8rem;
 }
@@ -605,6 +607,60 @@ body::after {
 .device-route.not-ready,
 .device-route.not-ready strong {
     color: var(--color-danger);
+}
+
+.route-guidance {
+    color: #91b5ca;
+    font-size: 0.78rem;
+    line-height: 1.4;
+}
+
+.route-explanation summary {
+    width: fit-content;
+    color: #72c9f7;
+    cursor: pointer;
+    font-size: 0.78rem;
+}
+
+.route-explanation ul {
+    display: grid;
+    gap: 4px;
+    margin: 6px 0 0;
+    padding-left: 18px;
+}
+
+.route-candidate {
+    color: #b9d7e8;
+    line-height: 1.35;
+}
+
+.route-candidate.ready strong {
+    color: var(--color-success);
+}
+
+.route-candidate.not-ready strong {
+    color: #f3b24e;
+}
+
+.button-help,
+.devices-actions-help {
+    color: var(--color-text-secondary);
+    font-size: 0.78rem;
+    line-height: 1.4;
+}
+
+.dashboard-header-actions .button-help {
+    display: block;
+    max-width: 230px;
+    margin-top: 6px;
+}
+
+.dashboard-sync .button-help {
+    margin-left: 8px;
+}
+
+.devices-actions-help {
+    margin: 0 0 14px;
 }
 
 /* LigronTail: mapa de control visible, no configuración técnica. */

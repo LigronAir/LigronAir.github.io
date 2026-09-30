@@ -100,11 +100,14 @@
 
                     <button
                         id="registerDeviceButton"
-                        class="ligron-button primary">
+                        class="ligron-button primary"
+                        title="Registra un nuevo LigronPi o LigronAir Native en esta cuenta.">
 
                         + Registrar equipo
 
                     </button>
+
+                    <span class="button-help">Abre el alta de un Pi o Native; no cambia rutas existentes.</span>
 
                 </div>
 
@@ -195,11 +198,14 @@
 
                 <button
                     id="refreshDashboardButton"
-                    class="ligron-button primary">
+                    class="ligron-button primary"
+                    title="Actualiza estados y rutas mostrados. No modifica la configuración de red.">
 
                     ⟳ Actualizar
 
                 </button>
+
+                <span class="button-help">Solo consulta el estado actual de equipos, cajas y rutas.</span>
 
             </section>
 
@@ -208,6 +214,11 @@
             <!-- ========================================= -->
 
             <section class="panel devices-panel">
+
+                <p class="devices-actions-help">
+                    <strong>Acciones:</strong> «Red y cajas» muestra el diagnóstico sin cambiar la red;
+                    «Eliminar» pide confirmación y borra el equipo de esta cuenta.
+                </p>
 
                 <div class="devices-table">
 

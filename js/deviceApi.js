@@ -65,7 +65,10 @@ export async function loadDevices() {
 
     }
 
-    return result.devices;
+    return {
+        devices: Array.isArray(result.devices) ? result.devices : [],
+        routePlans: Array.isArray(result.route_plans) ? result.route_plans : []
+    };
 
 }
 
