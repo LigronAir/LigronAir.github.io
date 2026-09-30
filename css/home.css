@@ -642,6 +642,34 @@ body::after {
     color: #f3b24e;
 }
 
+.pi-telemetry {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+    gap: 6px 12px;
+    margin-top: 4px;
+    padding: 10px;
+    border: 1px solid rgba(65, 192, 241, 0.26);
+    border-radius: 8px;
+    background: rgba(7, 30, 45, 0.46);
+    color: #b9d7e8;
+    font-size: 0.8rem;
+}
+
+.pi-telemetry strong,
+.pi-telemetry .telemetry-time {
+    grid-column: 1 / -1;
+}
+
+.pi-telemetry.muted {
+    color: #91b5ca;
+}
+
+.pi-telemetry .telemetry-warning {
+    color: #ffc05a;
+    font-weight: 700;
+}
+
 .button-help,
 .devices-actions-help {
     color: var(--color-text-secondary);

@@ -222,6 +222,40 @@ function renderRuntimeStatus(device) {
 
 }
 
+function formatTelemetryNumber(value, suffix = "") {
+    const number = Number(value);
+    return Number.isFinite(number) ? `${number.toLocaleString("es-ES", { maximumFractionDigits: 1 })}${suffix}` : "—";
+}
+
+function renderPiTelemetry(device) {
+    if (!isPi(device)) return "";
+    const runtime = device.runtime_status || {};
+    const telemetry = runtime.telemetry && typeof runtime.telemetry === "object" ? runtime.telemetry : {};
+    const system = telemetry.system || {};
+    const network = telemetry.network || {};
+    const audio = telemetry.audio || {};
+    const pipeline = telemetry.pipeline || {};
+    const packetLoss = pipeline.packet_loss && typeof pipeline.packet_loss === "object"
+        ? pipeline.packet_loss
+        : {};
+    if (!telemetry.sampled_at) {
+        return `<div class="pi-telemetry muted">Telemetría Pi pendiente del siguiente heartbeat.</div>`;
+    }
+    return `
+        <div class="pi-telemetry">
+            <strong>Telemetría de LigronPi</strong>
+            <span>CPU: ${escapeHtml(formatTelemetryNumber(system.cpu_percent, "%"))}</span>
+            <span>RAM: ${escapeHtml(formatTelemetryNumber(system.ram_percent, "%"))}</span>
+            <span>Temperatura: ${escapeHtml(formatTelemetryNumber(system.temperature_c, " °C"))}</span>
+            <span>Red: ↓ ${escapeHtml(formatTelemetryNumber(network.download_kbps, " kb/s"))} · ↑ ${escapeHtml(formatTelemetryNumber(network.upload_kbps, " kb/s"))}</span>
+            <span>Vúmetro: L ${escapeHtml(formatTelemetryNumber(audio.left_percent, "%"))} · R ${escapeHtml(formatTelemetryNumber(audio.right_percent, "%"))}</span>
+            <span>Preview: ${escapeHtml(formatTelemetryNumber(pipeline.preview_fps, " fps"))} · ${escapeHtml(String(pipeline.preview_frames ?? "—"))} frames</span>
+            <span>SRT: ${escapeHtml(String(pipeline.srt_phase || "IDLE"))}${pipeline.retry_count ? ` · reintentos ${escapeHtml(String(pipeline.retry_count))}` : ""}</span>
+            <span class="${packetLoss.active ? "telemetry-warning" : ""}">Paquetes: ${packetLoss.active ? "DEGRADACIÓN ACTIVA" : "sin incidencias actuales"}${packetLoss.events ? ` · avisos ${escapeHtml(String(packetLoss.events))}` : ""}</span>
+            <span class="telemetry-time">Muestra: ${escapeHtml(telemetry.sampled_at)}</span>
+        </div>`;
+}
+
 // ==========================================================
 // LigronTail: Link explica la ruta sin exponer su mecánica.
 // ==========================================================
@@ -369,6 +403,7 @@ function renderReceiverDetails(device, devices) {
             <span>LigronTail: ${escapeHtml(tail.label)} · ${escapeHtml(network.tailscale_ipv4_address || "—")}</span>
             <span>Tailnet: ${escapeHtml(network.tailscale_tailnet || "—")}</span>
             <span>Última presencia: ${escapeHtml(network.last_seen_at || "—")}</span>
+            ${renderPiTelemetry(device)}
             <div class="device-route-list">
                 <strong>Gestor de rutas con equipos vinculados</strong>
                 <span class="route-guidance">LigronLink selecciona automáticamente la primera ruta comprobada. Esta vista informa: no abre puertos, no modifica la VPN y no inicia emisiones.</span>
