@@ -410,6 +410,21 @@ body::after {
     line-height: 1.2;
 }
 
+.device-profile {
+    display: block;
+    margin-top: 6px;
+    color: #8fd6ff;
+    font-size: 0.72rem;
+    font-weight: 750;
+    line-height: 1.35;
+}
+
+.srt-chip.emitter {
+    color: #8fd6ff;
+    border-color: rgba(55, 194, 255, 0.52);
+    background: rgba(23, 105, 151, 0.24);
+}
+
 .device-runtime {
     /* ### FIX */
     display: flex;
@@ -430,6 +445,11 @@ body::after {
     font-size: 0.7rem;
     font-weight: 800;
     letter-spacing: 0.03em;
+}
+
+/* El tailnet pertenece al diagnóstico, no al estado de operación. */
+.device-ligron-tail[title] {
+    cursor: help;
 }
 
 .device-ligron-tail.ready {
@@ -843,6 +863,15 @@ body::after {
     gap: 8px;
 }
 
+.receiver-card.has-owner {
+    text-align: center;
+}
+
+.receiver-card.has-owner .receiver-card-head {
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
 .receiver-name {
     color: var(--color-text);
     font-weight: 800;
@@ -877,6 +906,31 @@ body::after {
     margin-top: 7px;
     color: var(--color-text-muted);
     font-size: 0.72rem;
+}
+
+.receiver-owner {
+    margin-top: 5px;
+    color: #8fd6ff;
+    font-size: 0.74rem;
+    font-weight: 800;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+/* Los rótulos cortos conservan su lectura natural. Cuando el contenido se
+   extiende a tres líneas (cajas reservadas/acciones), se centra dentro de su
+   celda y nunca invade la siguiente columna. */
+.devices-row .devices-cell.type-cell,
+.devices-row .devices-cell.srt-cell,
+.devices-row .devices-cell.registered-cell {
+    text-align: center;
+}
+
+.devices-actions .ligron-button {
+    min-height: 42px;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.2;
 }
 
 .devices-row .devices-cell.uuid-cell {

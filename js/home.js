@@ -107,6 +107,14 @@ function formatDate(value) {
 
 function renderSrtSummary(device) {
 
+    if (isPi(device)) {
+        return `
+            <div class="srt-summary emitter" title="LigronPi es un emisor: no publica cajas receptoras.">
+                <span class="srt-chip emitter">EMISOR</span>
+                <span class="srt-total">sin cajas</span>
+            </div>`;
+    }
+
     const summary =
         device.srt_receivers;
 
@@ -202,17 +210,16 @@ function renderRuntimeStatus(device) {
 
         </span>
 
-        <span class="runtime-line">
-
-            ${escapeHtml(source)}
-
-        </span>
+        ${source ? `
+            <span class="runtime-line">
+                ${escapeHtml(source)}
+            </span>` : ""}
 
         ${
             target
                 ? `
                     <span class="runtime-line target">
-                        → ${escapeHtml(target)}
+                        ${isPi(device) ? "Conectado a: " : "Destino: "}${escapeHtml(target)}
                     </span>
                 `
                 : ""
@@ -268,6 +275,29 @@ function isPi(device) {
 function isNative(device) {
     return String(device.tipo || "").trim().toLowerCase()
         .includes("ligronair");
+}
+
+function piProfile(device) {
+    const network = device.network_status || {};
+    const model = String(network.hardware_model || "").trim();
+    const memoryGb = Number(network.hardware_memory_gb || 0);
+    const family = /raspberry\s+pi\s+5/i.test(model)
+        ? "Raspberry Pi 5"
+        : /raspberry\s+pi\s+4/i.test(model)
+            ? "Raspberry Pi 4"
+            : model || "Raspberry Pi";
+    const memory = memoryGb > 0 ? `${memoryGb} GB RAM` : "RAM sin informar";
+    return {
+        family,
+        memory,
+        summary: `${family} · ${memory} · emisor SRT · referencia 25 fps`
+    };
+}
+
+function renderPiProfile(device) {
+    if (!isPi(device)) return "";
+    const profile = piProfile(device);
+    return `<span class="device-profile" title="${escapeHtml(profile.summary)}">${escapeHtml(profile.summary)}</span>`;
 }
 
 let routePlansByPair = new Map();
@@ -349,8 +379,8 @@ function routePlan(pi, native) {
 function renderLigronTailDeviceLine(device) {
     const tail = ligronTailState(device);
     return `
-        <span class="device-ligron-tail ${tail.tone}">
-            LigronTail: ${escapeHtml(tail.label)} · ${escapeHtml(tail.detail)}
+        <span class="device-ligron-tail ${tail.tone}" title="${escapeHtml(tail.detail)}">
+            LigronTail: ${escapeHtml(tail.label)}
         </span>`;
 }
 
@@ -400,8 +430,7 @@ function renderReceiverDetails(device, devices) {
             <span>IP local: ${escapeHtml(network.ipv4_address || "—")}</span>
             <span>IP exterior: ${escapeHtml(device.public_ip || "—")}</span>
             <span>IPv6: ${escapeHtml(network.ipv6_address || "—")}</span>
-            <span>LigronTail: ${escapeHtml(tail.label)} · ${escapeHtml(network.tailscale_ipv4_address || "—")}</span>
-            <span>Tailnet: ${escapeHtml(network.tailscale_tailnet || "—")}</span>
+            <span title="${escapeHtml(tail.detail)}">LigronTail: ${escapeHtml(tail.label)} · ${escapeHtml(network.tailscale_ipv4_address || "—")}</span>
             <span>Última presencia: ${escapeHtml(network.last_seen_at || "—")}</span>
             ${renderPiTelemetry(device)}
             <div class="device-route-list">
@@ -444,10 +473,14 @@ function renderReceiverDetails(device, devices) {
                             : state === "RESERVED"
                                 ? "Reservado"
                                 : "Apagado";
+                const reservedBy = String(receiver.reserved_by_alias || "").trim();
+                const ownerLine = reservedBy && (state === "RESERVED" || state === "BUSY")
+                    ? `<div class="receiver-owner">Por: ${escapeHtml(reservedBy)}</div>`
+                    : "";
 
                 return `
 
-                    <div class="receiver-card ${escapeHtml(state.toLowerCase())}">
+                    <div class="receiver-card ${escapeHtml(state.toLowerCase())}${ownerLine ? " has-owner" : ""}">
 
                         <div class="receiver-card-head">
 
@@ -468,6 +501,8 @@ function renderReceiverDetails(device, devices) {
                             · Endpoint: ${escapeHtml(receiver.host || "—")}
 
                         </div>
+
+                        ${ownerLine}
 
                     </div>
 
@@ -570,6 +605,8 @@ async function removeDevice(device) {
 // Renderizar listado de equipos
 // ==========================================================
 
+const expandedDeviceUuids = new Set();
+
 function renderDevices(devices) {
 
     const deviceList =
@@ -582,6 +619,10 @@ function renderDevices(devices) {
     }
 
     deviceList.innerHTML = "";
+    const currentUuids = new Set(devices.map(device => String(device.uuid || "")));
+    for (const uuid of expandedDeviceUuids) {
+        if (!currentUuids.has(uuid)) expandedDeviceUuids.delete(uuid);
+    }
 
     if (devices.length === 0) {
 
@@ -623,6 +664,9 @@ function renderDevices(devices) {
 
     devices.forEach(device => {
 
+        const deviceUuid = String(device.uuid || "");
+        const expanded = expandedDeviceUuids.has(deviceUuid);
+
         const row =
             document.createElement("tr");
 
@@ -660,7 +704,7 @@ function renderDevices(devices) {
 
                 <span class="device-main-name">
 
-                    ${escapeHtml(friendlyType)}
+                    ${escapeHtml(friendlyType)}${isPi(device) ? " · EMISOR" : ""}
 
                 </span>
 
@@ -669,6 +713,8 @@ function renderDevices(devices) {
                     ${escapeHtml(device.alias || "Sin alias")}
 
                 </span>
+
+                ${renderPiProfile(device)}
 
                 <span class="device-runtime">
 
@@ -714,9 +760,9 @@ function renderDevices(devices) {
                         type="button"
                         class="ligron-button receivers-button"
                         title="Muestra el plan de rutas y el estado de las cajas; no modifica la red."
-                        aria-expanded="false">
+                        aria-expanded="${expanded}">
 
-                        ${isNative(device) ? "Red y cajas" : "Red"}
+                        ${expanded ? (isNative(device) ? "Ocultar red y cajas" : "Ocultar red") : (isNative(device) ? "Red y cajas" : "Red")}
 
                     </button>
 
@@ -749,7 +795,7 @@ function renderDevices(devices) {
 
         deviceList.appendChild(row);
 
-        detailRow.className = "receiver-detail-row hidden"; // ### FIX
+        detailRow.className = `receiver-detail-row${expanded ? "" : " hidden"}`;
         detailRow.innerHTML = `
 
             <td colspan="7" class="receiver-detail-cell">
@@ -764,9 +810,11 @@ function renderDevices(devices) {
 
             detailRow.classList.toggle("hidden");
             const expanded = !detailRow.classList.contains("hidden");
+            if (expanded) expandedDeviceUuids.add(deviceUuid);
+            else expandedDeviceUuids.delete(deviceUuid);
             receiversButton.setAttribute("aria-expanded", String(expanded));
             receiversButton.textContent = expanded
-                ? "Ocultar red y cajas"
+                ? (isNative(device) ? "Ocultar red y cajas" : "Ocultar red")
                 : (isNative(device) ? "Red y cajas" : "Red");
 
         });
