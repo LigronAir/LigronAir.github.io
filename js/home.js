@@ -105,23 +105,83 @@ function formatDate(value) {
 // Renderizar resumen de receptores SRT
 // ==========================================================
 
-function piActiveNativeTarget(device) {
-    if (!isPi(device) || !deviceIsLive(device)) return "";
+function activePiRuntime(device) {
+    if (!isPi(device) || !deviceIsLive(device)) return false;
     const runtime = device.runtime_status || {};
     const runtimeState = String(runtime.runtime_state || "").toUpperCase();
-    const active = Boolean(runtime.streaming) ||
+    return Boolean(runtime.streaming) ||
         ["CONNECTING", "EMITTING", "RECONNECTING"].includes(runtimeState);
-    const nativeUuid = String(runtime.target_device_uuid || "").trim();
-    const targetLabel = String(runtime.target_label || "").trim();
-    if (!active || !nativeUuid || !targetLabel) return "";
-
-    return targetLabel.replace(/^native\s+/i, "").trim();
 }
 
-function renderSrtSummary(device) {
+function parseSrtEndpoint(value) {
+    const text = String(value || "").trim();
+    if (!/^srt:\/\//i.test(text)) return null;
+    try {
+        const parsed = new URL(text);
+        const port = Number(parsed.port || 0);
+        return parsed.hostname && port > 0
+            ? { host: parsed.hostname.toLowerCase(), port }
+            : null;
+    } catch {
+        return null;
+    }
+}
+
+function nativeTargetForPi(pi, devices) {
+    if (!activePiRuntime(pi)) return null;
+    const runtime = pi.runtime_status || {};
+    const targetUuid = String(runtime.target_device_uuid || "").trim();
+    const endpoint = parseSrtEndpoint(
+        runtime.target_srt_url || runtime.target_label
+    );
+    const natives = devices.filter(isNative);
+    let native = targetUuid
+        ? natives.find(item => String(item.uuid || "") === targetUuid)
+        : null;
+
+    if (!native && endpoint) {
+        native = natives.find(item => {
+            const network = item.network_status || {};
+            const hosts = [
+                item.public_ip,
+                network.ipv4_address,
+                network.tailscale_ipv4_address,
+                ...(Array.isArray(item.srt_receiver_list)
+                    ? item.srt_receiver_list.map(receiver => receiver.host)
+                    : [])
+            ]
+                .map(host => String(host || "").trim().toLowerCase())
+                .filter(Boolean);
+            const portMatches = (item.srt_receiver_list || [])
+                .some(receiver => Number(receiver.port || 0) === endpoint.port);
+            return hosts.includes(endpoint.host) && portMatches;
+        });
+    }
+
+    if (!native) return null;
+    const receiver = endpoint
+        ? (native.srt_receiver_list || []).find(
+            item => Number(item.port || 0) === endpoint.port
+        ) || null
+        : null;
+    return { native, receiver };
+}
+
+function piActiveNativeTarget(device, devices) {
+    const target = nativeTargetForPi(device, devices);
+    if (!target) return "";
+
+    const alias = String(target.native.alias || "Native").trim();
+    const sourceId = Number(target.receiver?.source_id || 0);
+    return sourceId > 0
+        ? `${alias} · Caja ${String(sourceId).padStart(2, "0")}`
+        : alias;
+}
+
+function renderSrtSummary(device, devices = []) {
 
     if (isPi(device)) {
-        const target = piActiveNativeTarget(device);
+        const target = piActiveNativeTarget(device, devices);
         return `
             <div class="srt-summary emitter" title="LigronPi es un emisor: no publica cajas receptoras.">
                 <span class="srt-chip emitter">EMISOR</span>
@@ -542,8 +602,24 @@ function renderReceiverDetails(device, devices) {
                 const inactiveReservedBy = String(
                     receiver.inactive_reservation_by_alias || ""
                 ).trim();
+                const activePiAliases = devices
+                    .filter(isPi)
+                    .filter(pi => {
+                        const target = nativeTargetForPi(pi, devices);
+                        if (!target || target.native.uuid !== device.uuid) {
+                            return false;
+                        }
+                        return !target.receiver ||
+                            Number(target.receiver.source_id || 0) ===
+                                Number(receiver.source_id || 0);
+                    })
+                    .map(pi => String(pi.alias || "LigronPi").trim())
+                    .filter(Boolean);
+                const detectedOwner = activePiAliases.join(" · ");
                 const ownerLine = reservedBy && (state === "RESERVED" || state === "BUSY")
                     ? `<div class="receiver-owner">${state === "BUSY" ? "En uso por" : "Reservado por"}: ${escapeHtml(reservedBy)}</div>`
+                    : detectedOwner && (state === "RESERVED" || state === "BUSY")
+                        ? `<div class="receiver-owner">${state === "BUSY" ? "En uso por" : "Reservado por"}: ${escapeHtml(detectedOwner)}</div>`
                     : inactiveReservedBy && (reportedState === "RESERVED" || reportedState === "BUSY")
                         ? `<div class="receiver-owner history">Última asociación: ${escapeHtml(inactiveReservedBy)} · no activa</div>`
                         : state === "BUSY"
@@ -808,7 +884,7 @@ function renderDevices(devices) {
 
             <td class="devices-cell srt-cell" data-label="SRT">
 
-                ${renderSrtSummary(device)}
+                ${renderSrtSummary(device, devices)}
 
             </td>
 
