@@ -147,6 +147,17 @@ function renderSrtSummary(device) {
     const offline =
         Number(summary.offline || 0);
 
+    if (offline > 0) {
+        return `
+            <div
+                class="srt-summary unavailable"
+                title="Native sin presencia reciente: sus ${offline} cajas no están disponibles ni tienen reservas operativas.">
+                <span class="srt-chip offline">
+                    Native apagado · ${offline} cajas
+                </span>
+            </div>`;
+    }
+
     return `
 
         <div
@@ -201,6 +212,23 @@ function renderRuntimeStatus(device) {
 
     const source =
         runtime.source_label || "";
+
+    if (!deviceIsLive(device)) {
+        return `
+            <span class="runtime-pill offline">OFFLINE</span>
+            <span class="runtime-line stale">
+                Última sesión: ${escapeHtml(state)}
+            </span>
+            ${source ? `
+                <span class="runtime-line stale">
+                    Última fuente: ${escapeHtml(source)}
+                </span>` : ""}
+            ${target ? `
+                <span class="runtime-line target stale">
+                    Último destino: ${escapeHtml(target)}
+                </span>` : ""}
+        `;
+    }
 
     return `
 
@@ -275,6 +303,12 @@ function isPi(device) {
 function isNative(device) {
     return String(device.tipo || "").trim().toLowerCase()
         .includes("ligronair");
+}
+
+function deviceIsLive(device) {
+    return String(device.control_state || device.estado || "OFFLINE")
+        .trim()
+        .toUpperCase() === "ONLINE";
 }
 
 function piProfile(device) {
@@ -378,6 +412,12 @@ function routePlan(pi, native) {
 
 function renderLigronTailDeviceLine(device) {
     const tail = ligronTailState(device);
+    if (!deviceIsLive(device)) {
+        return `
+            <span class="device-ligron-tail stale" title="Sin presencia reciente en LigronLink. ${escapeHtml(tail.detail)}">
+                LigronTail: sin presencia
+            </span>`;
+    }
     return `
         <span class="device-ligron-tail ${tail.tone}" title="${escapeHtml(tail.detail)}">
             LigronTail: ${escapeHtml(tail.label)}
@@ -398,6 +438,13 @@ function renderReceiverDetails(device, devices) {
 
     const network = device.network_status || {};
     const tail = ligronTailState(device);
+    const deviceLive = deviceIsLive(device);
+    const networkHeading = deviceLive
+        ? "Red sincronizada con LigronLink"
+        : "Última red registrada · sin presencia actual";
+    const tailLine = deviceLive
+        ? `<span title="${escapeHtml(tail.detail)}">LigronTail: ${escapeHtml(tail.label)} · ${escapeHtml(network.tailscale_ipv4_address || "—")}</span>`
+        : `<span title="${escapeHtml(tail.detail)}">LigronTail: sin presencia</span>`;
     const peers = isPi(device)
         ? devices.filter(isNative)
         : isNative(device)
@@ -425,12 +472,12 @@ function renderReceiverDetails(device, devices) {
         : '<span class="device-route not-ready">No hay equipo complementario registrado en esta cuenta.</span>';
     const networkDetails = `
         <div class="receiver-network">
-            <strong>Red sincronizada con LigronLink</strong>
+            <strong>${networkHeading}</strong>
             <span>Sincronización: ${escapeHtml(network.sync_state || "NO REPORTADA")}</span>
             <span>IP local: ${escapeHtml(network.ipv4_address || "—")}</span>
             <span>IP exterior: ${escapeHtml(device.public_ip || "—")}</span>
             <span>IPv6: ${escapeHtml(network.ipv6_address || "—")}</span>
-            <span title="${escapeHtml(tail.detail)}">LigronTail: ${escapeHtml(tail.label)} · ${escapeHtml(network.tailscale_ipv4_address || "—")}</span>
+            ${tailLine}
             <span>Última presencia: ${escapeHtml(network.last_seen_at || "—")}</span>
             ${renderPiTelemetry(device)}
             <div class="device-route-list">
@@ -464,6 +511,8 @@ function renderReceiverDetails(device, devices) {
 
                 const state =
                     String(receiver.state || "OFFLINE").toUpperCase();
+                const reportedState =
+                    String(receiver.reported_state || "").toUpperCase();
 
                 const label =
                     state === "FREE"
@@ -474,9 +523,14 @@ function renderReceiverDetails(device, devices) {
                                 ? "Reservado"
                                 : "Apagado";
                 const reservedBy = String(receiver.reserved_by_alias || "").trim();
+                const inactiveReservedBy = String(
+                    receiver.inactive_reservation_by_alias || ""
+                ).trim();
                 const ownerLine = reservedBy && (state === "RESERVED" || state === "BUSY")
                     ? `<div class="receiver-owner">Por: ${escapeHtml(reservedBy)}</div>`
-                    : "";
+                    : inactiveReservedBy && (reportedState === "RESERVED" || reportedState === "BUSY")
+                        ? `<div class="receiver-owner history">Última asociación: ${escapeHtml(inactiveReservedBy)} · no activa</div>`
+                        : "";
 
                 return `
 

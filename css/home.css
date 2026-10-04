@@ -464,6 +464,14 @@ body::after {
     background: rgba(242, 84, 91, 0.06);
 }
 
+.device-ligron-tail.stale,
+.runtime-pill.offline,
+.runtime-line.stale {
+    color: var(--color-text-muted);
+    border-color: rgba(174, 190, 210, 0.22);
+    background: rgba(174, 190, 210, 0.05);
+}
+
 .runtime-pill {
     padding: 4px 8px;
     border-radius: 999px;
@@ -501,6 +509,10 @@ body::after {
 
 .runtime-line.target {
     color: var(--color-warning);
+}
+
+.runtime-line.target.stale {
+    color: var(--color-text-muted);
 }
 
 .devices-row .devices-cell.type-cell,
@@ -554,6 +566,16 @@ body::after {
     color: #59c7ff;
     border-color: rgba(89, 199, 255, 0.30);
     background: rgba(89, 199, 255, 0.08);
+}
+
+.srt-summary.unavailable {
+    justify-content: center;
+}
+
+.srt-chip.offline {
+    color: var(--color-text-muted);
+    border-color: rgba(174, 190, 210, 0.28);
+    background: rgba(174, 190, 210, 0.07);
 }
 
 .srt-total {
@@ -915,6 +937,11 @@ body::after {
     font-weight: 800;
     line-height: 1.35;
     overflow-wrap: anywhere;
+}
+
+.receiver-owner.history {
+    color: var(--color-text-muted);
+    font-weight: 650;
 }
 
 /* Los rótulos cortos conservan su lectura natural. Cuando el contenido se
