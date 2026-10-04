@@ -105,13 +105,29 @@ function formatDate(value) {
 // Renderizar resumen de receptores SRT
 // ==========================================================
 
+function piActiveNativeTarget(device) {
+    if (!isPi(device) || !deviceIsLive(device)) return "";
+    const runtime = device.runtime_status || {};
+    const runtimeState = String(runtime.runtime_state || "").toUpperCase();
+    const active = Boolean(runtime.streaming) ||
+        ["CONNECTING", "EMITTING", "RECONNECTING"].includes(runtimeState);
+    const nativeUuid = String(runtime.target_device_uuid || "").trim();
+    const targetLabel = String(runtime.target_label || "").trim();
+    if (!active || !nativeUuid || !targetLabel) return "";
+
+    return targetLabel.replace(/^native\s+/i, "").trim();
+}
+
 function renderSrtSummary(device) {
 
     if (isPi(device)) {
+        const target = piActiveNativeTarget(device);
         return `
             <div class="srt-summary emitter" title="LigronPi es un emisor: no publica cajas receptoras.">
                 <span class="srt-chip emitter">EMISOR</span>
-                <span class="srt-total">sin cajas</span>
+                ${target
+                    ? `<span class="srt-total emitter-target" title="Destino LigronLink activo">→ ${escapeHtml(target)}</span>`
+                    : ""}
             </div>`;
     }
 
@@ -527,9 +543,13 @@ function renderReceiverDetails(device, devices) {
                     receiver.inactive_reservation_by_alias || ""
                 ).trim();
                 const ownerLine = reservedBy && (state === "RESERVED" || state === "BUSY")
-                    ? `<div class="receiver-owner">Por: ${escapeHtml(reservedBy)}</div>`
+                    ? `<div class="receiver-owner">${state === "BUSY" ? "En uso por" : "Reservado por"}: ${escapeHtml(reservedBy)}</div>`
                     : inactiveReservedBy && (reportedState === "RESERVED" || reportedState === "BUSY")
                         ? `<div class="receiver-owner history">Última asociación: ${escapeHtml(inactiveReservedBy)} · no activa</div>`
+                        : state === "BUSY"
+                            ? `<div class="receiver-owner external">Origen externo o local · emisor no identificado por LigronLink</div>`
+                            : state === "RESERVED"
+                                ? `<div class="receiver-owner external">Reserva Link · emisor sin alias disponible</div>`
                         : "";
 
                 return `

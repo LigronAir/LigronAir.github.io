@@ -572,6 +572,21 @@ body::after {
     justify-content: center;
 }
 
+.srt-summary.emitter {
+    justify-content: center;
+}
+
+.srt-total.emitter-target {
+    max-width: 15rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #8fd6ff;
+    font-weight: 800;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
 .srt-chip.offline {
     color: var(--color-text-muted);
     border-color: rgba(174, 190, 210, 0.28);
@@ -941,6 +956,11 @@ body::after {
 
 .receiver-owner.history {
     color: var(--color-text-muted);
+    font-weight: 650;
+}
+
+.receiver-owner.external {
+    color: var(--color-warning);
     font-weight: 650;
 }
 
