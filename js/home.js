@@ -1050,7 +1050,10 @@ refreshDashboard();
 // ### FIX
 setInterval(
     refreshDashboard,
-    20000
+    // El dashboard es una vista informativa: los cambios importantes ya
+    // refrescan por evento/botón. Un minuto evita que varias pestañas gasten
+    // lecturas D1 sólo para repintar la misma fotografía.
+    60000
 );
 
 window.addEventListener(
