@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0c0f14" />
+    <title>LigronLink | Pool</title>
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/buttons.css" />
+    <link rel="stylesheet" href="css/icons.css" />
+    <link rel="stylesheet" href="css/header.css" />
+    <link rel="stylesheet" href="css/home.css" />
+    <link rel="stylesheet" href="css/pool.css" />
+</head>
+<body>
+<div class="page">
+    <header class="ligron-header">
+        <div class="header-brand">
+            <img class="header-logo" src="ligron.png" alt="LigronAir" />
+            <div class="header-text">
+                <h1 class="header-title">LigronAir</h1>
+                <div class="header-subtitle">Pool de fuentes y vías de recepción</div>
+            </div>
+        </div>
+        <div class="header-actions" id="headerActions"></div>
+    </header>
+    <main class="content">
+        <section class="dashboard pool-dashboard">
+            <div class="dashboard-header">
+                <div class="dashboard-header-copy">
+                    <h2>Pool</h2>
+                    <p>Arrastra una LigronPi presente sobre una vía libre. Link reserva la vía y espera la confirmación de la Pi; una señal externa nunca se sustituye automáticamente.</p>
+                </div>
+                <div class="dashboard-header-actions pool-actions">
+                    <a class="ligron-button secondary" href="home.html">← Panel</a>
+                    <button id="poolRefreshButton" type="button" class="ligron-button primary">⟳ Actualizar</button>
+                </div>
+            </div>
+            <div id="poolNotice" class="pool-notice" role="status">Cargando fotografía actual de Link…</div>
+            <section class="pool-columns" aria-label="Pool de fuentes y receptores">
+                <article class="pool-column pool-sources">
+                    <div class="pool-column-head">
+                        <div><span class="pool-kicker">FUENTES</span><h3>LigronPi presentes</h3></div>
+                        <span id="poolPiCount" class="pool-count">0</span>
+                    </div>
+                    <p class="pool-guide">Una Pi online puede estar esperando aunque todavía no emita. La miniatura queda reservada para una fase posterior.</p>
+                    <div id="poolPiList" class="pool-list"></div>
+                </article>
+                <article class="pool-column pool-receivers">
+                    <div class="pool-column-head">
+                        <div><span class="pool-kicker">RECEPTORES</span><h3>LigronAir Native</h3></div>
+                        <span id="poolNativeCount" class="pool-count">0</span>
+                    </div>
+                    <p class="pool-guide">Abre un Native para ver sus vías. Soltar una fuente sobre una vía inicia una operación confirmada, no una conexión directa desde el navegador.</p>
+                    <div id="poolNativeList" class="pool-list"></div>
+                </article>
+            </section>
+        </section>
+    </main>
+    <footer>LigronLink · Pool · V0.7.4-261005_0352_Pool</footer>
+</div>
+<script type="module" src="js/header.js"></script>
+<script type="module" src="js/pool.js"></script>
+</body>
+</html>
