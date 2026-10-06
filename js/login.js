@@ -63,7 +63,7 @@ form.addEventListener("submit", async function (event) {
         if (resultado.success) {
 
             // Guardar la sesión del usuario
-            saveUser(resultado.user);
+            saveUser(resultado.user, resultado.access_token, resultado.expires_in);
 
             showMessage(
 

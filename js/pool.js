@@ -3,7 +3,7 @@
 // Snapshot/manual refresh. It deliberately does not poll D1.
 // ==========================================================
 
-import { getUser } from "./session.js";
+import { getAccessToken, getUser } from "./session.js";
 import { loadDevices } from "./deviceApi.js";
 
 const API = "https://api.ligronair.tv/api/v1";
@@ -179,9 +179,11 @@ function renderNatives(devices) {
 async function postClaim(pi, native, receiver, replace = false) {
     const response = await fetch(`${API}/pool/claim`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${getAccessToken()}`
+        },
         body: JSON.stringify({
-            email: user.email,
             pi_uuid: pi.uuid,
             native_uuid: native.uuid,
             source_id: Number(receiver.source_id),

@@ -3,6 +3,8 @@
 // Gestión de equipos
 // ==========================================================
 
+import { getAccessToken, getUser } from "./session.js";
+
 const API =
     "https://api.ligronair.tv/api/v1";
 
@@ -12,10 +14,9 @@ const API =
 
 function getCurrentUser() {
 
-    const raw =
-        localStorage.getItem("ligronUser");
+    const user = getUser();
 
-    if (!raw) {
+    if (!user) {
 
         throw new Error(
             "No existe una sesión iniciada."
@@ -23,7 +24,7 @@ function getCurrentUser() {
 
     }
 
-    return JSON.parse(raw);
+    return user;
 
 }
 
@@ -35,15 +36,16 @@ export async function loadDevices() {
 
     console.log("=== LOAD DEVICES ===");
 
-    const user =
-        getCurrentUser();
+    getCurrentUser();
+    const token = getAccessToken();
 
     const response =
         await fetch(
 
-            API +
-            "/devices?email=" +
-            encodeURIComponent(user.email)
+            API + "/devices",
+            {
+                headers: { "Authorization": `Bearer ${token}` }
+            }
 
         );
 
@@ -81,21 +83,20 @@ export async function deleteDevice(deviceId) {
 
     console.log("=== DELETE DEVICE ===");
 
-    const user =
-        getCurrentUser();
+    getCurrentUser();
+    const token = getAccessToken();
 
     const response =
         await fetch(
 
             API +
             "/device/" +
-            deviceId +
-            "?email=" +
-            encodeURIComponent(user.email),
+            deviceId,
 
             {
 
-                method: "DELETE"
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${token}` }
 
             }
 
