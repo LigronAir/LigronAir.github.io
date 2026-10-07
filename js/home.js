@@ -7,7 +7,9 @@ import { getUser } from "./session.js";
 import { openDeviceRegisterDialog } from "./deviceRegister.js";
 import {
     loadDevices,
-    deleteDevice
+    deleteDevice,
+    issueDeviceCredential,
+    revokeDeviceCredential
 } from "./deviceApi.js";
 
 console.log("HOME CARGADO");
@@ -750,6 +752,83 @@ async function removeDevice(device) {
 
 }
 
+function closeDialog() {
+    window.dialog.close();
+}
+
+function showDeviceCredential(device, credential) {
+    window.dialog.open({
+        title: "Credencial de LigronPi",
+        content: `
+            <p>Instala esta credencial ahora, fuera de directo, en <strong>${escapeHtml(device.alias || "LigronPi")}</strong>.</p>
+            <p>Se muestra una sola vez. No la guardes en notas, correo ni capturas de pantalla.</p>
+            <pre class="device-credential" aria-label="Credencial de provisionado"></pre>
+            <p>En la Pi, ejecuta el instalador indicado en la documentación y pégala cuando lo solicite.</p>
+        `,
+        buttons: [{ text: "Cerrar y borrar", class: "secondary", action: closeDialog }]
+    });
+    const credentialElement = window.dialog.body.querySelector(".device-credential");
+    if (credentialElement) credentialElement.textContent = credential;
+}
+
+function openDeviceCredentialDialog(device) {
+    window.dialog.open({
+        title: "Preparar acceso automático",
+        content: `
+            <p>Esta acción prepara a <strong>${escapeHtml(device.alias || "LigronPi")}</strong> para reconectar sola después de un corte eléctrico.</p>
+            <p>Generar una nueva credencial invalida la anterior. Debes instalarla en esa Pi antes de reiniciarla.</p>
+        `,
+        buttons: [
+            { text: "Cancelar", class: "secondary", action: closeDialog },
+            {
+                text: "Generar credencial",
+                class: "primary",
+                action: async () => {
+                    const buttons = window.dialog.footer.querySelectorAll("button");
+                    buttons.forEach(button => { button.disabled = true; });
+                    try {
+                        showDeviceCredential(device, await issueDeviceCredential(device.uuid));
+                    } catch (error) {
+                        window.dialog.body.textContent = `No se pudo generar la credencial: ${error.message}`;
+                        window.dialog.footer.textContent = "";
+                        const closeButton = document.createElement("button");
+                        closeButton.className = "ligron-button secondary";
+                        closeButton.textContent = "Cerrar";
+                        closeButton.addEventListener("click", closeDialog);
+                        window.dialog.footer.appendChild(closeButton);
+                    }
+                }
+            }
+        ]
+    });
+}
+
+function openDeviceCredentialRevokeDialog(device) {
+    window.dialog.open({
+        title: "Revocar acceso automático",
+        content: `
+            <p>La Pi <strong>${escapeHtml(device.alias || "LigronPi")}</strong> dejará de reconectar automáticamente en su próximo arranque.</p>
+            <p>La revocación no corta una emisión en curso. Para volver a automatizarla habrá que generar e instalar una credencial nueva.</p>
+        `,
+        buttons: [
+            { text: "Cancelar", class: "secondary", action: closeDialog },
+            {
+                text: "Revocar credencial",
+                class: "secondary",
+                action: async () => {
+                    try {
+                        await revokeDeviceCredential(device.uuid);
+                        closeDialog();
+                        alert("Acceso automático revocado.");
+                    } catch (error) {
+                        window.dialog.body.textContent = `No se pudo revocar la credencial: ${error.message}`;
+                    }
+                }
+            }
+        ]
+    });
+}
+
 // ==========================================================
 // ### FIX
 // Renderizar listado de equipos
@@ -904,7 +983,7 @@ function renderDevices(devices) {
 
             <td class="devices-cell actions-cell" data-label="Acciones">
 
-                <div class="devices-actions">
+                <div class="devices-actions${isPi(device) ? " pi-actions" : ""}">
 
                     <button
                         type="button"
@@ -925,6 +1004,21 @@ function renderDevices(devices) {
 
                     </button>
 
+                    ${isPi(device) ? `
+                    <button
+                        type="button"
+                        class="ligron-button credential-button"
+                        title="Prepara o sustituye la credencial cifrada de reconexión automática.">
+                        Acceso automático
+                    </button>
+
+                    <button
+                        type="button"
+                        class="ligron-button credential-revoke-button"
+                        title="Revoca la reconexión autónoma de esta Pi en el siguiente arranque.">
+                        Revocar acceso
+                    </button>` : ""}
+
                 </div>
 
             </td>
@@ -937,11 +1031,21 @@ function renderDevices(devices) {
         const receiversButton =
             row.querySelector(".receivers-button"); // ### FIX
 
+        const credentialButton = row.querySelector(".credential-button");
+        const credentialRevokeButton = row.querySelector(".credential-revoke-button");
+
         deleteButton.addEventListener("click", () => {
 
             removeDevice(device);
 
         });
+
+        if (credentialButton) {
+            credentialButton.addEventListener("click", () => openDeviceCredentialDialog(device));
+        }
+        if (credentialRevokeButton) {
+            credentialRevokeButton.addEventListener("click", () => openDeviceCredentialRevokeDialog(device));
+        }
 
         deviceList.appendChild(row);
 

@@ -147,6 +147,11 @@ class LigronDialog {
     close() {
 
         this.overlay.classList.remove("open");
+        // Un diálogo puede contener una credencial de provisionado. No debe
+        // permanecer en el DOM ni al volver a abrir otro diálogo.
+        this.title.textContent = "";
+        this.body.textContent = "";
+        this.footer.textContent = "";
 
     }
 

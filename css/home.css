@@ -993,6 +993,10 @@ body::after {
     width: 100%;
 }
 
+.devices-actions.pi-actions {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .devices-actions .ligron-button {
     min-width: 0;
     width: 100%;
@@ -1202,6 +1206,30 @@ footer {
     }
 }
 
+.devices-actions .credential-button {
+    color: #72c9f7;
+    border-color: rgba(114, 201, 247, 0.35);
+}
+
+.devices-actions .credential-revoke-button {
+    color: #ffc05a;
+    border-color: rgba(255, 192, 90, 0.35);
+}
+
+.device-credential {
+    display: block;
+    max-width: 100%;
+    margin: 18px 0;
+    padding: 14px;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+    border: 1px solid rgba(255, 192, 90, 0.42);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.30);
+    color: #ffffff;
+    font: 700 0.82rem/1.45 monospace;
+}
+
 @media (max-width: 900px) {
 
     .summary {
@@ -1239,8 +1267,12 @@ footer {
 
     .devices-actions {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         width: 100%;
+    }
+
+    .devices-actions.pi-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .devices-actions .ligron-button {

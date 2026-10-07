@@ -123,3 +123,41 @@ export async function deleteDevice(deviceId) {
     return true;
 
 }
+
+// La credencial se recibe una sola vez. No se registra en consola ni se
+// conserva en localStorage: el navegador sólo la muestra al instalador.
+export async function issueDeviceCredential(deviceUuid) {
+    getCurrentUser();
+    const response = await fetch(API + "/device/credential", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${getAccessToken()}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ device_uuid: deviceUuid }),
+        cache: "no-store"
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success || !result.credential) {
+        throw new Error(result.error || "No se pudo preparar la credencial de la Pi.");
+    }
+    return String(result.credential);
+}
+
+export async function revokeDeviceCredential(deviceUuid) {
+    getCurrentUser();
+    const response = await fetch(API + "/device/credential", {
+        method: "DELETE",
+        headers: {
+            "Authorization": `Bearer ${getAccessToken()}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ device_uuid: deviceUuid }),
+        cache: "no-store"
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+        throw new Error(result.error || "No se pudo revocar la credencial de la Pi.");
+    }
+    return Boolean(result.revoked);
+}
