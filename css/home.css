@@ -734,10 +734,14 @@ body::after {
     line-height: 1.4;
 }
 
+/* La ayuda de cada control vive en su atributo title. Los párrafos fijos
+   ocupaban más espacio que los propios controles. */
+.button-help {
+    display: none;
+}
+
 .dashboard-header-actions .button-help {
-    display: block;
-    max-width: 230px;
-    margin-top: 6px;
+    display: none;
 }
 
 .dashboard-sync .button-help {
