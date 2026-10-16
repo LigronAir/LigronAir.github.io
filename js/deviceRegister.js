@@ -2,6 +2,8 @@
 // LigronLink
 // Device Register
 // ==========================================================
+import { getAccessToken, getUser } from "./session.js";
+
 console.log("DEVICE REGISTER V2");
 
 export function openDeviceRegisterDialog() {
@@ -127,7 +129,8 @@ export function openDeviceRegisterDialog() {
 
                                 headers: {
 
-                                    "Content-Type": "application/json"
+                                    "Content-Type": "application/json",
+                                    "Authorization": `Bearer ${getAccessToken()}`
 
                                 },
 
@@ -135,7 +138,8 @@ export function openDeviceRegisterDialog() {
 
                                     tipo,
                                     alias,
-                                    uuid
+                                    uuid,
+                                    email: String(getUser()?.email || "").trim().toLowerCase()
 
                                 })
 

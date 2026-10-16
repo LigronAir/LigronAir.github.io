@@ -7,7 +7,11 @@ import { getUser } from "./session.js";
 import { openDeviceRegisterDialog } from "./deviceRegister.js";
 import {
     loadDevices,
-    deleteDevice
+    deleteDevice,
+    authorizePiRecovery,
+    revokeDeviceCredential,
+    approvePiPairing,
+    loadPendingPiPairings
 } from "./deviceApi.js";
 
 console.log("HOME CARGADO");
@@ -750,6 +754,70 @@ async function removeDevice(device) {
 
 }
 
+async function authorizePi(device) {
+    try {
+        await authorizePiRecovery(device.uuid);
+        alert("Pi autorizada. Si está encendida, LigronPi recuperará su conexión privada automáticamente en menos de un minuto.");
+        await refreshDashboard();
+    } catch (error) {
+        console.error(error);
+        alert(error.message);
+    }
+}
+
+async function revokePi(device) {
+    const confirmacion = confirm(
+        `¿Revocar el acceso de "${device.alias}"? La Pi dejará de entrar en la red privada hasta que la autorices de nuevo.`
+    );
+    if (!confirmacion) return;
+    try {
+        const result = await revokeDeviceCredential(device.uuid);
+        if (result?.ligron_tail?.removed) {
+            alert("Acceso de la Pi y nodo LigronTail revocados. Ninguna recuperación automática podrá reactivarla sin tu autorización.");
+        } else {
+            alert("Acceso de la Pi revocado. La retirada del nodo Tail queda pendiente de activar el permiso devices:core de LigronTail.");
+        }
+        await refreshDashboard();
+    } catch (error) {
+        console.error(error);
+        alert(error.message);
+    }
+}
+
+function renderPendingPairings(pairings) {
+    const container = document.getElementById("pendingPiPairings");
+    if (!container) return;
+    if (!pairings.length) {
+        container.innerHTML = "";
+        container.classList.add("hidden");
+        return;
+    }
+    container.classList.remove("hidden");
+    container.innerHTML = `
+        <strong>LigronPi pendientes de autorización</strong>
+        <span>Una Pi no obtiene red privada hasta que la apruebes aquí.</span>
+        <div class="pending-pairing-list">
+            ${pairings.map((pairing) => `
+                <div class="pending-pairing-item">
+                    <span>${escapeHtml(pairing.device_alias || "LigronPi")} · ${escapeHtml(pairing.device_uuid || "")}</span>
+                    <button type="button" class="ligron-button approve-pairing-button" data-pairing-id="${escapeHtml(pairing.pairing_id)}">Autorizar Pi</button>
+                </div>
+            `).join("")}
+        </div>`;
+    container.querySelectorAll(".approve-pairing-button").forEach((button) => {
+        button.addEventListener("click", async () => {
+            try {
+                await approvePiPairing(button.dataset.pairingId || "");
+                alert("Pi autorizada. LigronPi recibirá su identidad y activará LigronTail automáticamente.");
+                await refreshDashboard();
+            } catch (error) {
+                console.error(error);
+                alert(error.message);
+            }
+        });
+    });
+}
+
 function closeDialog() {
     window.dialog.close();
 }
@@ -929,7 +997,17 @@ function renderDevices(devices) {
 
                     </button>
 
-                    ${isPi(device) ? `<span class="device-auto-access" title="La Pi renueva su identidad con Link y configura LigronTail sin copiar secretos.">Autoconexión: gestionada por la Pi</span>` : ""}
+                    ${isPi(device) ? `
+                        <button type="button" class="ligron-button authorize-pi-button"
+                            title="Permite una única recuperación automática de esta Pi. No muestra ni copia secretos.">
+                            Autorizar Pi
+                        </button>
+                        <button type="button" class="ligron-button revoke-pi-button"
+                            title="Revoca el acceso de esta Pi a LigronTail hasta que vuelvas a autorizarla.">
+                            Revocar Pi
+                        </button>
+                        <span class="device-auto-access" title="Tras la primera vinculación, la Pi guarda su identidad y configura LigronTail sin contraseñas del sistema ni secretos copiados.">Autoconexión segura</span>
+                    ` : ""}
 
                 </div>
 
@@ -943,11 +1021,21 @@ function renderDevices(devices) {
         const receiversButton =
             row.querySelector(".receivers-button"); // ### FIX
 
+        const authorizePiButton = row.querySelector(".authorize-pi-button");
+        const revokePiButton = row.querySelector(".revoke-pi-button");
+
         deleteButton.addEventListener("click", () => {
 
             removeDevice(device);
 
         });
+
+        if (authorizePiButton) {
+            authorizePiButton.addEventListener("click", () => authorizePi(device));
+        }
+        if (revokePiButton) {
+            revokePiButton.addEventListener("click", () => revokePi(device));
+        }
 
         deviceList.appendChild(row);
 
@@ -1018,7 +1106,10 @@ async function refreshDashboard() {
 
     try {
 
-        const { devices, routePlans } = await loadDevices();
+        const [{ devices, routePlans }, pairings] = await Promise.all([
+            loadDevices(),
+            loadPendingPiPairings()
+        ]);
 
         routePlansByPair = new Map(routePlans.map((plan) => [
             `${plan.pi_uuid}:${plan.native_uuid}`,
@@ -1030,6 +1121,7 @@ async function refreshDashboard() {
         updateCounters(devices);
 
         renderDevices(devices);
+        renderPendingPairings(pairings);
 
         // ### FIX
         updateLastRefresh();

@@ -1294,3 +1294,22 @@ footer {
         min-width: 0;
     }
 }
+.hidden {
+    display: none !important;
+}
+
+.pending-pairing-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.pending-pairing-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid rgba(55, 194, 255, 0.35);
+    border-radius: 8px;
+}
