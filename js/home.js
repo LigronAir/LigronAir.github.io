@@ -442,13 +442,16 @@ function ligronTailState(device) {
         BOOTSTRAP_INPUT_MISSING: { label: "SESIÓN INCOMPLETA", detail: "Native debe iniciar sesión de nuevo" },
         LIGRONTAIL_NETWORK_FAILED: { label: "LINK INALCANZABLE", detail: "Native no pudo llegar a Link" },
         LIGRONTAIL_PROVIDER_FAILED: { label: "RED PRIVADA NO DISPONIBLE", detail: "Link no pudo obtener la identidad de red" },
+        CREDENTIAL_UNAVAILABLE: { label: "IDENTIDAD PENDIENTE", detail: "La Pi aún no ha recibido su identidad de LigronLink" },
+        DEVICE_AUTH_FAILED: { label: "IDENTIDAD NO VÁLIDA", detail: "La identidad sellada de esta Pi fue rechazada; autorízala de nuevo en Link" },
+        ENROLLMENT_FAILED: { label: "TAIL NO SE ACTIVÓ", detail: "Tailscale rechazó la identidad temporal; vuelve a conectar la Pi para reintentarlo" },
         REQUEST_FAILED: { label: "VINCULACIÓN FALLIDA", detail: "Link no pudo preparar la red privada" },
         INSTALLER_MISSING: { label: "INSTALADOR AUSENTE", detail: "Native necesita su componente LigronTail" }
     };
     if (provisioningState[provisioning]) {
         return {
             ...provisioningState[provisioning],
-            detail: provisioning === "INSTALL_FAILED" && provisioningError
+            detail: provisioningError
                 ? provisioningError
                 : provisioningState[provisioning].detail,
             tone: "not-ready"
