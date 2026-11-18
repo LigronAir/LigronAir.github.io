@@ -6,6 +6,12 @@
 import { getAccessToken, getUser } from "./session.js";
 import { loadDevices } from "./deviceApi.js";
 
+import { createThumbnails } from "./thumbnails.js";
+
+const thumbnails = createThumbnails(document.getElementById("thumbnailNotice"));
+const preview = '<div class="pool-preview">Sin miniatura</div>';
+const available = device => ["ONLINE", "BUSY"].includes(String(device.estado).toUpperCase());
+
 const API = "https://api.ligronair.tv/api/v1";
 const user = getUser();
 const notice = document.getElementById("poolNotice");
@@ -78,7 +84,7 @@ function renderPis(devices) {
         const alias = escapeHtml(pi.alias || "LigronPi");
         return `
             <article class="pool-pi ${online ? "" : "offline"}" data-pi-uuid="${escapeHtml(pi.uuid)}" draggable="${online ? "true" : "false"}">
-                <div class="pool-preview">MINIATURA<br>PRÓXIMAMENTE</div>
+                ${preview}
                 <div>
                     <div class="pool-pi-title">${alias}</div>
                     <div class="pool-pi-detail">${escapeHtml(piRoute(pi))}</div>
@@ -113,6 +119,7 @@ function receiverOwner(receiver, status) {
 }
 
 function renderNatives(devices) {
+    const expanded = new Set([...nativeList.querySelectorAll(".open")].map(card => card.dataset.nativeCard));
     const natives = devices.filter(isNative);
     nativeCount.textContent = String(natives.length);
     if (!natives.length) {
@@ -132,14 +139,15 @@ function renderNatives(devices) {
             return `
                 <div class="pool-via ${state.toLowerCase()}" data-native-uuid="${escapeHtml(native.uuid)}" data-source-id="${Number(receiver.source_id)}" data-droppable="${canDrop ? "true" : "false"}">
                     <div class="pool-via-title"><span>${escapeHtml(receiver.name || `VÍA ${receiver.source_id}`)}</span><span class="pool-state ${state.toLowerCase()}">${escapeHtml(state)}</span></div>
+                    ${preview}
                     <div class="pool-via-status">Puerto ${escapeHtml(receiver.port)} · ${escapeHtml(receiver.mode || "listener")}</div>
                     ${owner ? `<div class="pool-via-owner">${escapeHtml(owner)}</div>` : ""}
                     <div class="pool-via-endpoint">${escapeHtml(receiver.host || "endpoint pendiente")}:${escapeHtml(receiver.port || "—")}</div>
                 </div>`;
         }).join("") || '<div class="pool-empty">Este Native todavía no ha publicado vías SRT.</div>';
         return `
-            <article class="pool-native ${online ? "" : "offline"}" data-native-card="${escapeHtml(native.uuid)}">
-                <button class="pool-native-toggle" type="button" aria-expanded="false">
+            <article class="pool-native ${expanded.has(native.uuid) ? "open" : ""} ${online ? "" : "offline"}" data-native-card="${escapeHtml(native.uuid)}">
+                <button class="pool-native-toggle" type="button" aria-expanded="${expanded.has(native.uuid)}">
                     <span><span class="pool-native-name">${escapeHtml(native.alias || "LigronAir Native")}</span><span class="pool-native-detail">${escapeHtml(summary)}</span></span>
                     <span class="pool-native-chevron">⌄</span>
                 </button>
@@ -220,20 +228,55 @@ async function requestClaim(pi, native, receiver) {
     }
 }
 
-async function refresh() {
+function bindThumbnails(devices) {
+    const catalog = new Map(devices.map(device => [device.uuid, device]));
+    const entries = [];
+    for (const card of piList.querySelectorAll("[data-pi-uuid]")) {
+        const uuid = card.dataset.piUuid;
+        entries.push({ target: { kind: "pi", device_uuid: uuid }, node: card.querySelector(".pool-preview"),
+            eligible: available(catalog.get(uuid)) });
+    }
+    for (const via of nativeList.querySelectorAll("[data-source-id]")) {
+        const uuid = via.dataset.nativeUuid;
+        const source = Number(via.dataset.sourceId);
+        if (!Number.isSafeInteger(source) || source < 0) continue;
+        entries.push({ target: { kind: "native_box", device_uuid: uuid, source_id: source },
+            node: via.querySelector(".pool-preview"), eligible: available(catalog.get(uuid)) && via.classList.contains("busy") });
+    }
+    thumbnails.bind(entries);
+}
+
+async function refresh(manual = false) {
+    const signal = thumbnails.begin();
     refreshButton.disabled = true;
     try {
         setNotice("Leyendo una fotografía actual de Link…");
         const { devices } = await loadDevices();
+        if (signal.aborted) return;
         renderPis(devices);
         renderNatives(devices);
+        bindThumbnails(devices);
+        if (manual) void thumbnails.refresh(signal);
         setNotice(`Fotografía cargada: ${devices.length} equipos. Actualiza manualmente para consultar cambios.`, "success");
     } catch (error) {
+        if (signal.aborted) return;
+        thumbnails.redraw();
         setNotice(String(error?.message || error), "error");
     } finally {
-        refreshButton.disabled = false;
+        if (!signal.aborted) refreshButton.disabled = false;
     }
 }
 
-refreshButton?.addEventListener("click", refresh);
+refreshButton?.addEventListener("click", () => refresh(true));
+window.addEventListener("pagehide", thumbnails.dispose);
+window.addEventListener("pageshow", event => { if (event.persisted) refresh(); });
+window.addEventListener("storage", event => {
+    if (!event.key || event.key === "ligronUser") {
+        thumbnails.dispose();
+        window.location.reload();
+    }
+});
+document.addEventListener("click", event => {
+    if (event.target.closest?.("#logoutButton")) thumbnails.dispose();
+}, true);
 refresh();

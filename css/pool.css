@@ -46,3 +46,7 @@
 .pool-via-endpoint { margin-top: 6px; color: var(--color-text-muted); font: .7rem ui-monospace, monospace; overflow-wrap: anywhere; }
 @media (max-width: 900px) { .pool-columns { grid-template-columns: 1fr; } .pool-dashboard .dashboard-header { flex-direction: column; } }
 @media (max-width: 520px) { .pool-pi { grid-template-columns: 1fr; } .pool-native-vias { grid-template-columns: 1fr; } }
+.pool-preview { align-content: center; overflow: hidden; letter-spacing: normal; }
+.pool-preview img { display: block; width: 100%; max-height: 100px; object-fit: contain; }
+.pool-preview span { padding: 4px; overflow-wrap: anywhere; }
+#thumbnailNotice:empty { display: none; }
