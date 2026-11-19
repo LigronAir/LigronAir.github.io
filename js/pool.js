@@ -6,7 +6,7 @@
 import { getAccessToken, getUser } from "./session.js";
 import { loadDevices } from "./deviceApi.js";
 
-import { createThumbnails } from "./thumbnails.js?v=R20261119-push";
+import { createThumbnails } from "./thumbnails.js?v=R19112026_1650";
 
 const thumbnails = createThumbnails(document.getElementById("thumbnailNotice"));
 const preview = '<div class="pool-preview">Sin miniatura</div>';
