@@ -61,10 +61,13 @@ export function createThumbnails(notice) {
     }
 
     async function refresh(signal) {
-        const visible = [...cards.values()].filter(card => card.eligible && card.node.getClientRects().length);
-        const selected = visible.slice(0, 10);
+        // Las vías Native comienzan plegadas. Su preview no tiene rectángulo
+        // visible hasta abrir la caja, pero continúa siendo un destino válido
+        // de una actualización solicitada desde Pool.
+        const eligible = [...cards.values()].filter(card => card.eligible);
+        const selected = eligible.slice(0, 10);
         if (!selected.length) return;
-        if (visible.length > 10) notice.textContent = "Se solicitan los primeros 10 destinos visibles.";
+        if (eligible.length > 10) notice.textContent = "Se solicitan los primeros 10 destinos disponibles.";
         const deadline = performance.now() + 30000;
         const pending = new Set(selected);
         selected.forEach(card => draw(card, labels.PENDING));
