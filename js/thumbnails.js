@@ -87,13 +87,14 @@ export function createThumbnails(notice) {
         cards.forEach(card => draw(card));
     }
 
-    async function refresh(signal, resume = false) {
+    async function refresh(signal, resume = false, deviceUuid = "") {
         // Las vías Native comienzan plegadas. Su preview no tiene rectángulo
         // visible hasta abrir la caja, pero continúa siendo un destino válido
         // de una actualización solicitada desde Pool.
-        const eligible = [...cards.values()].filter(card => card.eligible);
+        const eligible = [...cards.values()].filter(card => card.eligible &&
+            (!deviceUuid || card.target.device_uuid === deviceUuid));
         const selected = eligible.slice(0, 10);
-        if (!selected.length) return;
+        if (!selected.length) return { empty: true };
         if (eligible.length > 10) notice.textContent = "Se solicitan los primeros 10 destinos disponibles.";
         const deadline = performance.now() + 30000;
         let pending = new Set(selected);
@@ -183,7 +184,7 @@ export function createThumbnails(notice) {
         try {
             const saved = resume ? savedBatch() : null;
             const batchId = saved?.id;
-            if (resume && !batchId) return;
+            if (resume && !batchId) return { missing: true };
             const response = batchId
                 ? await request("/requests/" + encodeURIComponent(batchId))
                 : await request("/requests", {

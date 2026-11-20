@@ -6,13 +6,18 @@
 import { getAccessToken, getUser } from "./session.js";
 import { loadDevices } from "./deviceApi.js";
 
-import { createThumbnails } from "./thumbnails.js?v=R20112026_1250";
+import { createThumbnails } from "./thumbnails.js?v=R20112026_1340";
 
 const thumbnails = createThumbnails(document.getElementById("thumbnailNotice"));
 const preview = '<div class="pool-preview">Sin miniatura</div>';
 const LIVE_PREVIEW_INTERVAL_MS = 120_000;
 let livePreviewTimer;
 let lastLivePreviewAt = 0;
+let presenceSocket;
+let presenceRetryTimer;
+let presenceRetryMs = 1000;
+let pendingChangedDevice = "";
+let pendingChangedTimer;
 const available = device => ["ONLINE", "BUSY"].includes(String(device.estado).toUpperCase());
 
 const API = "https://api.ligronair.tv/api/v1";
@@ -254,6 +259,53 @@ function stopLivePreview() {
     livePreviewTimer = undefined;
 }
 
+function stopPresenceEvents() {
+    clearTimeout(presenceRetryTimer);
+    presenceRetryTimer = undefined;
+    if (presenceSocket) {
+        presenceSocket.onclose = null;
+        presenceSocket.close();
+        presenceSocket = undefined;
+    }
+}
+
+function queueStatusRefresh(deviceUuid) {
+    pendingChangedDevice = deviceUuid || "";
+    clearTimeout(pendingChangedTimer);
+    pendingChangedTimer = setTimeout(() => {
+        const changed = pendingChangedDevice;
+        pendingChangedDevice = "";
+        if (changed && document.visibilityState === "visible") refresh(false, false, changed);
+    }, 250);
+}
+
+function connectPresenceEvents() {
+    if (presenceSocket || document.visibilityState !== "visible") return;
+    const token = getAccessToken();
+    if (!token) return;
+    const url = "wss://api.ligronair.tv/api/v1/pool/events";
+    try {
+        presenceSocket = new WebSocket(url, ["ligron-pool-v1", token]);
+    } catch {
+        presenceSocket = undefined;
+        return;
+    }
+    presenceSocket.onopen = () => { presenceRetryMs = 1000; };
+    presenceSocket.onmessage = event => {
+        try {
+            const message = JSON.parse(event.data);
+            if (message.type === "pool.device.changed") queueStatusRefresh(message.data?.device_uuid);
+        } catch { /* mensaje inválido: se reconcilia con el ciclo de 120 s */ }
+    };
+    presenceSocket.onclose = () => {
+        presenceSocket = undefined;
+        if (document.visibilityState !== "visible") return;
+        const delay = presenceRetryMs;
+        presenceRetryMs = Math.min(30_000, presenceRetryMs * 2);
+        presenceRetryTimer = setTimeout(connectPresenceEvents, delay);
+    };
+}
+
 function scheduleLivePreview() {
     stopLivePreview();
     if (document.visibilityState !== "visible") return;
@@ -264,7 +316,7 @@ function scheduleLivePreview() {
     }, delay);
 }
 
-async function refresh(manual = false, live = false) {
+async function refresh(manual = false, live = false, changedDeviceUuid = "") {
     const signal = thumbnails.begin();
     refreshButton.disabled = true;
     try {
@@ -278,11 +330,24 @@ async function refresh(manual = false, live = false) {
             lastLivePreviewAt = Date.now();
             void thumbnails.refresh(signal);
         }
+        else if (changedDeviceUuid) {
+            // Es un cambio confirmado por el productor. Sólo se encarga la
+            // miniatura de ese equipo; el resto no consume R2 ni D1 extra.
+            lastLivePreviewAt = Date.now();
+            await thumbnails.refresh(signal, false, changedDeviceUuid);
+        }
         else {
             // Una recarga recupera el lote existente. Conservamos su hora
             // real para no solicitar otro antes del límite del Worker.
             const resumed = await thumbnails.resume(signal);
             if (resumed?.createdAtMs) lastLivePreviewAt = resumed.createdAtMs;
+            else if (resumed?.missing) {
+                // Primera entrada al Pool: pedir una única fotografía. Si no
+                // hay Pi presente, el WebSocket despertará esta vista cuando
+                // una Pi confirme su estado; el ciclo de 120 s es respaldo.
+                lastLivePreviewAt = Date.now();
+                void thumbnails.refresh(signal);
+            }
         }
         setNotice(live
             ? `Vista en directo activa · siguiente miniatura en 120 s · ${devices.length} equipos.`
@@ -302,12 +367,18 @@ async function refresh(manual = false, live = false) {
 refreshButton?.addEventListener("click", () => refresh(true));
 window.addEventListener("pagehide", () => {
     stopLivePreview();
+    stopPresenceEvents();
     thumbnails.dispose();
 });
 window.addEventListener("pageshow", event => { if (event.persisted) refresh(); });
 document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") scheduleLivePreview();
-    else stopLivePreview();
+    if (document.visibilityState === "visible") {
+        scheduleLivePreview();
+        connectPresenceEvents();
+    } else {
+        stopLivePreview();
+        stopPresenceEvents();
+    }
 });
 window.addEventListener("storage", event => {
     if (!event.key || event.key === "ligronUser") {
@@ -318,4 +389,5 @@ window.addEventListener("storage", event => {
 document.addEventListener("click", event => {
     if (event.target.closest?.("#logoutButton")) thumbnails.dispose();
 }, true);
+connectPresenceEvents();
 refresh();
