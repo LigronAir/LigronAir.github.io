@@ -6,7 +6,7 @@
 import { getAccessToken, getUser } from "./session.js";
 import { loadDevices } from "./deviceApi.js";
 
-import { createThumbnails } from "./thumbnails.js?v=R20112026_1340";
+import { createThumbnails } from "./thumbnails.js?v=R20112026_1400";
 
 const thumbnails = createThumbnails(document.getElementById("thumbnailNotice"));
 const preview = '<div class="pool-preview">Sin miniatura</div>';
@@ -18,6 +18,9 @@ let presenceRetryTimer;
 let presenceRetryMs = 1000;
 let pendingChangedDevice = "";
 let pendingChangedTimer;
+let presenceExpiryTimer;
+let lastDevices = [];
+const PRESENCE_WINDOW_MS = 75_000;
 const available = device => ["ONLINE", "BUSY"].includes(String(device.estado).toUpperCase());
 
 const API = "https://api.ligronair.tv/api/v1";
@@ -51,6 +54,42 @@ function isNative(device) {
 
 function present(device) {
     return String(device?.estado || "").toUpperCase() === "ONLINE";
+}
+
+function deviceLastSeenMs(device) {
+    const value = String(device?.ultima_conexion || "").trim();
+    if (!value) return Number.NaN;
+    const normalized = value.includes("T") ? value : value.replace(" ", "T");
+    return Date.parse(/[zZ]|[+-]\d\d:\d\d$/.test(normalized) ? normalized : normalized + "Z");
+}
+
+function locallyPresent(device, now = Date.now()) {
+    if (String(device?.estado || "").toUpperCase() !== "ONLINE") return false;
+    const lastSeen = deviceLastSeenMs(device);
+    return Number.isFinite(lastSeen) && now >= lastSeen && now - lastSeen <= PRESENCE_WINDOW_MS;
+}
+
+function devicesWithCurrentPresence(devices, now = Date.now()) {
+    return devices.map(device => locallyPresent(device, now)
+        ? device
+        : { ...device, estado: "OFFLINE", control_state: "OFFLINE" });
+}
+
+function renderCurrentCatalog() {
+    const devices = devicesWithCurrentPresence(lastDevices);
+    renderPis(devices);
+    renderNatives(devices);
+    bindThumbnails(devices);
+    clearTimeout(presenceExpiryTimer);
+    const nextExpiry = lastDevices
+        .filter(device => String(device?.estado || "").toUpperCase() === "ONLINE")
+        .map(device => deviceLastSeenMs(device) + PRESENCE_WINDOW_MS)
+        .filter(Number.isFinite)
+        .reduce((earliest, value) => Math.min(earliest, value), Number.POSITIVE_INFINITY);
+    if (Number.isFinite(nextExpiry)) {
+        presenceExpiryTimer = setTimeout(renderCurrentCatalog, Math.max(250, nextExpiry - Date.now() + 25));
+    }
+    return devices;
 }
 
 function setNotice(text, style = "") {
@@ -267,6 +306,7 @@ function stopPresenceEvents() {
         presenceSocket.close();
         presenceSocket = undefined;
     }
+    clearTimeout(presenceExpiryTimer);
 }
 
 function queueStatusRefresh(deviceUuid) {
@@ -295,6 +335,16 @@ function connectPresenceEvents() {
         try {
             const message = JSON.parse(event.data);
             if (message.type === "pool.device.changed") queueStatusRefresh(message.data?.device_uuid);
+            if (message.type === "pool.device.alive") {
+                const device = lastDevices.find(item => item.uuid === message.data?.device_uuid);
+                const wasOffline = device && !locallyPresent(device);
+                if (device) device.ultima_conexion = message.at || new Date().toISOString();
+                renderCurrentCatalog();
+                // Tras una desconexión física la firma puede ser igual a la
+                // anterior. El regreso se reconcilia una vez, sin esperar al
+                // temporizador ni convertir cada heartbeat en lectura D1.
+                if (wasOffline) queueStatusRefresh(message.data?.device_uuid);
+            }
         } catch { /* mensaje inválido: se reconcilia con el ciclo de 120 s */ }
     };
     presenceSocket.onclose = () => {
@@ -323,9 +373,8 @@ async function refresh(manual = false, live = false, changedDeviceUuid = "") {
         setNotice("Leyendo una fotografía actual de Link…");
         const { devices } = await loadDevices();
         if (signal.aborted) return;
-        renderPis(devices);
-        renderNatives(devices);
-        bindThumbnails(devices);
+        lastDevices = devices;
+        renderCurrentCatalog();
         if (manual) {
             lastLivePreviewAt = Date.now();
             void thumbnails.refresh(signal);
