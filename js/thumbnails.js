@@ -16,11 +16,25 @@ export function createThumbnails(notice) {
     const images = new Map();
 
     function savedBatch() {
-        try { return sessionStorage.getItem(batchStorageKey); } catch { return null; }
+        let value;
+        try { value = sessionStorage.getItem(batchStorageKey); } catch { return null; }
+        if (!value) return null;
+        // También acepta el formato anterior (el UUID solo) para que una
+        // pestaña abierta antes de esta versión pueda reanudar su lote.
+        try {
+            const saved = JSON.parse(value);
+            if (typeof saved?.id === "string") return saved;
+        } catch { /* valor de la versión anterior */ }
+        return { id: value, createdAtMs: 0 };
     }
 
-    function saveBatch(batchId) {
-        try { sessionStorage.setItem(batchStorageKey, batchId); } catch { /* sesión no persistente */ }
+    function saveBatch(batch) {
+        try {
+            sessionStorage.setItem(batchStorageKey, JSON.stringify({
+                id: batch.batch_id,
+                createdAtMs: Date.parse(batch.created_at) || Date.now()
+            }));
+        } catch { /* sesión no persistente */ }
     }
 
     function forgetBatch() {
@@ -99,9 +113,9 @@ export function createThumbnails(notice) {
             const unavailable = error.status === 503;
             const rateLimited = error.status === 429;
             if (unavailable) notice.textContent = "Miniaturas temporalmente no disponibles.";
-            if (rateLimited) notice.textContent = "Otra sesión Pool ya está actualizando las miniaturas.";
+            if (rateLimited) notice.textContent = "Límite de 120 s activo; no se creó una captura duplicada.";
             for (const card of affected) draw(card,
-                unavailable ? "" : rateLimited ? "Actualización en otra sesión" : labels.FAILED);
+                unavailable ? "" : rateLimited ? "Siguiente actualización en hasta 120 s" : labels.FAILED);
         }
 
         async function apply(batch) {
@@ -167,7 +181,8 @@ export function createThumbnails(notice) {
         }
 
         try {
-            const batchId = resume ? savedBatch() : null;
+            const saved = resume ? savedBatch() : null;
+            const batchId = saved?.id;
             if (resume && !batchId) return;
             const response = batchId
                 ? await request("/requests/" + encodeURIComponent(batchId))
@@ -175,11 +190,10 @@ export function createThumbnails(notice) {
                     method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": crypto.randomUUID() },
                     body: JSON.stringify({ targets: selected.map(card => card.target) })
                 });
-            if (!batchId) {
-                const batch = await response.clone().json();
-                saveBatch(batch.batch_id);
-            }
+            const metadata = await response.clone().json();
+            if (!batchId) saveBatch(metadata);
             await consume(response, 0);
+            return { createdAtMs: Date.parse(metadata.created_at) || saved?.createdAtMs || 0 };
         } catch (error) {
             if (resume && error.status === 404) forgetBatch();
             failure(error, pending);

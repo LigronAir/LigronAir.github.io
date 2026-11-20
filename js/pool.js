@@ -6,7 +6,7 @@
 import { getAccessToken, getUser } from "./session.js";
 import { loadDevices } from "./deviceApi.js";
 
-import { createThumbnails } from "./thumbnails.js?v=R20112026_1230";
+import { createThumbnails } from "./thumbnails.js?v=R20112026_1250";
 
 const thumbnails = createThumbnails(document.getElementById("thumbnailNotice"));
 const preview = '<div class="pool-preview">Sin miniatura</div>';
@@ -278,7 +278,12 @@ async function refresh(manual = false, live = false) {
             lastLivePreviewAt = Date.now();
             void thumbnails.refresh(signal);
         }
-        else void thumbnails.resume(signal);
+        else {
+            // Una recarga recupera el lote existente. Conservamos su hora
+            // real para no solicitar otro antes del límite del Worker.
+            const resumed = await thumbnails.resume(signal);
+            if (resumed?.createdAtMs) lastLivePreviewAt = resumed.createdAtMs;
+        }
         setNotice(live
             ? `Vista en directo activa · siguiente miniatura en 120 s · ${devices.length} equipos.`
             : `Fotografía cargada: ${devices.length} equipos. Vista en directo cada 120 s mientras Pool esté visible.`, "success");
