@@ -2,6 +2,7 @@ import { getAccessToken } from "./session.js";
 
 const base = "https://api.ligronair.tv/api/v1/thumbnails";
 const keyOf = t => JSON.stringify([t.kind, t.device_uuid, t.source_id ?? null]);
+const batchStorageKey = "ligronPoolThumbnailBatch";
 const labels = {
     PENDING: "Pendiente", FAILED: "Captura fallida", EXPIRED: "Captura caducada",
     INVALIDATED: "Captura invalidada", READY: ""
@@ -13,6 +14,18 @@ export function createThumbnails(notice) {
     let cards = new Map();
     const previous = new Map();
     const images = new Map();
+
+    function savedBatch() {
+        try { return sessionStorage.getItem(batchStorageKey); } catch { return null; }
+    }
+
+    function saveBatch(batchId) {
+        try { sessionStorage.setItem(batchStorageKey, batchId); } catch { /* sesión no persistente */ }
+    }
+
+    function forgetBatch() {
+        try { sessionStorage.removeItem(batchStorageKey); } catch { /* sesión no persistente */ }
+    }
 
     function prune() {
         const used = new Set(previous.values());
@@ -60,7 +73,7 @@ export function createThumbnails(notice) {
         cards.forEach(card => draw(card));
     }
 
-    async function refresh(signal) {
+    async function refresh(signal, resume = false) {
         // Las vías Native comienzan plegadas. Su preview no tiene rectángulo
         // visible hasta abrir la caja, pero continúa siendo un destino válido
         // de una actualización solicitada desde Pool.
@@ -69,8 +82,8 @@ export function createThumbnails(notice) {
         if (!selected.length) return;
         if (eligible.length > 10) notice.textContent = "Se solicitan los primeros 10 destinos disponibles.";
         const deadline = performance.now() + 30000;
-        const pending = new Set(selected);
-        selected.forEach(card => draw(card, labels.PENDING));
+        let pending = new Set(selected);
+        if (!resume) selected.forEach(card => draw(card, labels.PENDING));
 
         async function request(path, options = {}) {
             const response = await fetch(base + path, {
@@ -127,8 +140,17 @@ export function createThumbnails(notice) {
         async function consume(response, polls) {
             const batch = await response.json();
             if (signal.aborted) return;
+            if (resume && polls === 0) {
+                const requested = new Set(batch.targets.map(keyOf));
+                pending = new Set(selected.filter(card => requested.has(keyOf(card.target))));
+                pending.forEach(card => draw(card, labels.PENDING));
+            }
             await apply(batch);
-            if (signal.aborted || !pending.size || polls === 2) return;
+            if (!pending.size) {
+                forgetBatch();
+                return;
+            }
+            if (signal.aborted || polls === 2) return;
             const delay = polls ? 10000 : 4000;
             if (performance.now() + delay >= deadline) return;
             timer = setTimeout(async () => {
@@ -142,11 +164,21 @@ export function createThumbnails(notice) {
         }
 
         try {
-            await consume(await request("/requests", {
-                method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": crypto.randomUUID() },
-                body: JSON.stringify({ targets: selected.map(card => card.target) })
-            }), 0);
+            const batchId = resume ? savedBatch() : null;
+            if (resume && !batchId) return;
+            const response = batchId
+                ? await request("/requests/" + encodeURIComponent(batchId))
+                : await request("/requests", {
+                    method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": crypto.randomUUID() },
+                    body: JSON.stringify({ targets: selected.map(card => card.target) })
+                });
+            if (!batchId) {
+                const batch = await response.clone().json();
+                saveBatch(batch.batch_id);
+            }
+            await consume(response, 0);
         } catch (error) {
+            if (resume && error.status === 404) forgetBatch();
             failure(error, pending);
         }
     }
@@ -159,5 +191,10 @@ export function createThumbnails(notice) {
         cards.clear();
     }
 
-    return { begin, bind, refresh, dispose, redraw: () => cards.forEach(card => draw(card)) };
+    return {
+        begin, bind, refresh,
+        resume: signal => refresh(signal, true),
+        dispose,
+        redraw: () => cards.forEach(card => draw(card))
+    };
 }

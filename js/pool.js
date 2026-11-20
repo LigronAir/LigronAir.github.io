@@ -6,7 +6,7 @@
 import { getAccessToken, getUser } from "./session.js";
 import { loadDevices } from "./deviceApi.js";
 
-import { createThumbnails } from "./thumbnails.js?v=R19112026_1650";
+import { createThumbnails } from "./thumbnails.js?v=R20112026_1150";
 
 const thumbnails = createThumbnails(document.getElementById("thumbnailNotice"));
 const preview = '<div class="pool-preview">Sin miniatura</div>';
@@ -257,6 +257,7 @@ async function refresh(manual = false) {
         renderNatives(devices);
         bindThumbnails(devices);
         if (manual) void thumbnails.refresh(signal);
+        else void thumbnails.resume(signal);
         setNotice(`Fotografía cargada: ${devices.length} equipos. Actualiza manualmente para consultar cambios.`, "success");
     } catch (error) {
         if (signal.aborted) return;
