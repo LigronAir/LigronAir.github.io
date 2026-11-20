@@ -97,8 +97,11 @@ export function createThumbnails(notice) {
         function failure(error, affected) {
             if (signal.aborted) return;
             const unavailable = error.status === 503;
+            const rateLimited = error.status === 429;
             if (unavailable) notice.textContent = "Miniaturas temporalmente no disponibles.";
-            for (const card of affected) draw(card, unavailable ? "" : labels.FAILED);
+            if (rateLimited) notice.textContent = "Otra sesión Pool ya está actualizando las miniaturas.";
+            for (const card of affected) draw(card,
+                unavailable ? "" : rateLimited ? "Actualización en otra sesión" : labels.FAILED);
         }
 
         async function apply(batch) {
@@ -150,7 +153,7 @@ export function createThumbnails(notice) {
                 forgetBatch();
                 return;
             }
-            if (signal.aborted || polls === 2) return;
+            if (signal.aborted || polls === 3) return;
             const delay = polls ? 10000 : 4000;
             if (performance.now() + delay >= deadline) return;
             timer = setTimeout(async () => {

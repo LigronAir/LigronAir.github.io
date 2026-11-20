@@ -6,10 +6,13 @@
 import { getAccessToken, getUser } from "./session.js";
 import { loadDevices } from "./deviceApi.js";
 
-import { createThumbnails } from "./thumbnails.js?v=R20112026_1150";
+import { createThumbnails } from "./thumbnails.js?v=R20112026_1230";
 
 const thumbnails = createThumbnails(document.getElementById("thumbnailNotice"));
 const preview = '<div class="pool-preview">Sin miniatura</div>';
+const LIVE_PREVIEW_INTERVAL_MS = 120_000;
+let livePreviewTimer;
+let lastLivePreviewAt = 0;
 const available = device => ["ONLINE", "BUSY"].includes(String(device.estado).toUpperCase());
 
 const API = "https://api.ligronair.tv/api/v1";
@@ -246,7 +249,22 @@ function bindThumbnails(devices) {
     thumbnails.bind(entries);
 }
 
-async function refresh(manual = false) {
+function stopLivePreview() {
+    clearTimeout(livePreviewTimer);
+    livePreviewTimer = undefined;
+}
+
+function scheduleLivePreview() {
+    stopLivePreview();
+    if (document.visibilityState !== "visible") return;
+    const elapsed = Date.now() - lastLivePreviewAt;
+    const delay = Math.max(0, LIVE_PREVIEW_INTERVAL_MS - elapsed);
+    livePreviewTimer = setTimeout(() => {
+        if (document.visibilityState === "visible") refresh(true, true);
+    }, delay);
+}
+
+async function refresh(manual = false, live = false) {
     const signal = thumbnails.begin();
     refreshButton.disabled = true;
     try {
@@ -256,21 +274,36 @@ async function refresh(manual = false) {
         renderPis(devices);
         renderNatives(devices);
         bindThumbnails(devices);
-        if (manual) void thumbnails.refresh(signal);
+        if (manual) {
+            lastLivePreviewAt = Date.now();
+            void thumbnails.refresh(signal);
+        }
         else void thumbnails.resume(signal);
-        setNotice(`Fotografía cargada: ${devices.length} equipos. Actualiza manualmente para consultar cambios.`, "success");
+        setNotice(live
+            ? `Vista en directo activa · siguiente miniatura en 120 s · ${devices.length} equipos.`
+            : `Fotografía cargada: ${devices.length} equipos. Vista en directo cada 120 s mientras Pool esté visible.`, "success");
     } catch (error) {
         if (signal.aborted) return;
         thumbnails.redraw();
         setNotice(String(error?.message || error), "error");
     } finally {
-        if (!signal.aborted) refreshButton.disabled = false;
+        if (!signal.aborted) {
+            refreshButton.disabled = false;
+            scheduleLivePreview();
+        }
     }
 }
 
 refreshButton?.addEventListener("click", () => refresh(true));
-window.addEventListener("pagehide", thumbnails.dispose);
+window.addEventListener("pagehide", () => {
+    stopLivePreview();
+    thumbnails.dispose();
+});
 window.addEventListener("pageshow", event => { if (event.persisted) refresh(); });
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") scheduleLivePreview();
+    else stopLivePreview();
+});
 window.addEventListener("storage", event => {
     if (!event.key || event.key === "ligronUser") {
         thumbnails.dispose();
