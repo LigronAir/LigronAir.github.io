@@ -3,6 +3,7 @@ import { getAccessToken } from "./session.js";
 const base = "https://api.ligronair.tv/api/v1/thumbnails";
 const keyOf = t => JSON.stringify([t.kind, t.device_uuid, t.source_id ?? null]);
 const batchStorageKey = "ligronPoolThumbnailBatch";
+const THUMBNAIL_INTERVAL_MS = 120_000;
 const labels = {
     PENDING: "Pendiente", FAILED: "Captura fallida", EXPIRED: "Captura caducada",
     INVALIDATED: "Captura invalidada", READY: ""
@@ -14,6 +15,7 @@ export function createThumbnails(notice) {
     let cards = new Map();
     const previous = new Map();
     const images = new Map();
+    const requestedAt = new Map();
 
     function savedBatch() {
         let value;
@@ -91,8 +93,10 @@ export function createThumbnails(notice) {
         // Las vías Native comienzan plegadas. Su preview no tiene rectángulo
         // visible hasta abrir la caja, pero continúa siendo un destino válido
         // de una actualización solicitada desde Pool.
+        const now = Date.now();
         const eligible = [...cards.values()].filter(card => card.eligible &&
-            (!deviceUuid || card.target.device_uuid === deviceUuid));
+            (!deviceUuid || card.target.device_uuid === deviceUuid) &&
+            (resume || now - (requestedAt.get(keyOf(card.target)) || 0) >= THUMBNAIL_INTERVAL_MS));
         const selected = eligible.slice(0, 10);
         if (!selected.length) return { empty: true };
         if (eligible.length > 10) notice.textContent = "Se solicitan los primeros 10 destinos disponibles.";
@@ -193,8 +197,10 @@ export function createThumbnails(notice) {
                 });
             const metadata = await response.clone().json();
             if (!batchId) saveBatch(metadata);
+            const createdAtMs = Date.parse(metadata.created_at) || now;
+            metadata.targets?.forEach(target => requestedAt.set(keyOf(target), createdAtMs));
             await consume(response, 0);
-            return { createdAtMs: Date.parse(metadata.created_at) || saved?.createdAtMs || 0 };
+            return { createdAtMs: createdAtMs || saved?.createdAtMs || 0 };
         } catch (error) {
             if (resume && error.status === 404) forgetBatch();
             failure(error, pending);
