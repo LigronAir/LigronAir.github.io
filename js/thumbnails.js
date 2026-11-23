@@ -144,8 +144,10 @@ export function createThumbnails(notice) {
                             const blob = await response.blob();
                             if (signal.aborted) return;
                             if (blob.type !== "image/jpeg" || !blob.size) throw new Error();
-                            const producer = capture.producer === "native_box" ? "Caja " + capture.source_id : "Pi";
-                            image = { url: URL.createObjectURL(blob), origin: producer + " · " + capture.producer_device_uuid,
+                            // El UUID es identidad interna: las tarjetas del Pool siempre
+                            // presentan el alias con el que trabaja el operador.
+                            const producer = String(group[0]?.alias || (capture.producer === "native_box" ? "LigronAir Native" : "LigronPi"));
+                            image = { url: URL.createObjectURL(blob), origin: producer,
                                 time: capture.captured_at_ms ?? capture.received_at_ms ?? Date.now() };
                             images.set(id, image);
                         }

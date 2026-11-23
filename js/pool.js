@@ -6,7 +6,7 @@
 import { getAccessToken, getUser } from "./session.js";
 import { loadDevices } from "./deviceApi.js";
 
-import { createThumbnails } from "./thumbnails.js?v=R20112026_1420";
+import { createThumbnails } from "./thumbnails.js?v=R23112026_0133";
 
 const thumbnails = createThumbnails(document.getElementById("thumbnailNotice"));
 const preview = '<div class="pool-preview">Sin miniatura</div>';
@@ -280,14 +280,14 @@ function bindThumbnails(devices) {
     const entries = [];
     for (const card of piList.querySelectorAll("[data-pi-uuid]")) {
         const uuid = card.dataset.piUuid;
-        entries.push({ target: { kind: "pi", device_uuid: uuid }, node: card.querySelector(".pool-preview"),
+        entries.push({ target: { kind: "pi", device_uuid: uuid }, alias: catalog.get(uuid)?.alias || "LigronPi", node: card.querySelector(".pool-preview"),
             eligible: available(catalog.get(uuid)) });
     }
     for (const via of nativeList.querySelectorAll("[data-source-id]")) {
         const uuid = via.dataset.nativeUuid;
         const source = Number(via.dataset.sourceId);
         if (!Number.isSafeInteger(source) || source < 0) continue;
-        entries.push({ target: { kind: "native_box", device_uuid: uuid, source_id: source },
+        entries.push({ target: { kind: "native_box", device_uuid: uuid, source_id: source }, alias: catalog.get(uuid)?.alias || "LigronAir Native",
             node: via.querySelector(".pool-preview"), eligible: available(catalog.get(uuid)) && via.classList.contains("busy") });
     }
     thumbnails.bind(entries);
