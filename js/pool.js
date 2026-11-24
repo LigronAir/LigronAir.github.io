@@ -6,7 +6,7 @@
 import { getAccessToken, getUser } from "./session.js";
 import { loadDevices } from "./deviceApi.js";
 
-import { createThumbnails } from "./thumbnails.js?v=R23112026_0133";
+import { createThumbnails } from "./thumbnails.js?v=R24112026_0257";
 
 const thumbnails = createThumbnails(document.getElementById("thumbnailNotice"));
 const preview = '<div class="pool-preview">Sin miniatura</div>';
@@ -114,6 +114,16 @@ function piTelemetry(device) {
 function piRoute(device) {
     const runtime = device.runtime_status;
     if (!runtime?.target_label) return "Disponible para ser reclamada desde Pool.";
+    const targetUuid = String(runtime.target_device_uuid || "").trim();
+    const target = targetUuid
+        ? lastDevices.find(candidate => String(candidate?.uuid || "") === targetUuid)
+        : null;
+    // La Pi puede mantener su emisor vivo mientras Native se reinicia. Eso
+    // conserva la ruta para una recuperación breve, pero Pool no puede
+    // presentarlo como si el receptor siguiera activo.
+    if (target && !locallyPresent(target)) {
+        return `Receptor sin presencia: ${runtime.target_label}. Emisión en espera de recuperación.`;
+    }
     return runtime.streaming
         ? `Emitiendo hacia ${runtime.target_label}`
         : `Asignada a ${runtime.target_label}`;
